@@ -8,8 +8,18 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
+#import "IntroScreenViewController.h"
+#import "MomentsCloud.h"
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
+#import <DigitsKit/DigitsKit.h>
+#import "LoginViewController.h"
+#import "UIViewController+UIViewController_PushPop.h"
 
 @interface AppDelegate ()
+{
+    IntroScreenViewController *introScreen;
+}
 
 @end
 
@@ -22,6 +32,10 @@
     // https://parse.com/docs/ios_guide#localdatastore/iOS
     [Parse enableLocalDatastore];
     
+    //[Fabric with:@[CrashlyticsKit, DigitsKit]];
+    [Fabric with:@[DigitsKit]];
+
+    
     // Initialize Parse.
     [Parse setApplicationId:@"w1yclkbSiKmKKtZ8APYzZwLsAaHGDUsC9YyLfFHb"
                   clientKey:@"qlFdUfbSy3BjJNNaBYnZPj1LIAixiDeWFbFicnZ9"];
@@ -30,7 +44,18 @@
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
     // ...
+    introScreen = [[IntroScreenViewController alloc] init];
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = introScreen;
+    [self.window makeKeyAndVisible];
     
+    if ([[MomentsCloud sharedCloud] loggedInUserName] == nil) {
+        LoginViewController *loginView = [[LoginViewController alloc] init];
+        [introScreen pushController:loginView withDirection:UIRectEdgeBottom withSuccess:nil];
+    } else {
+        
+    }
+
     return YES;
 }
 

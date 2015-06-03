@@ -19,7 +19,7 @@
   "source_files": "Pod/Classes/**/*",
   "resource_bundles": {
     "Moment": [
-      "Pod/Assets/*.png"
+      "Pod/Assets/leaks/*.jpg"
     ]
   },
   "dependencies": {
@@ -39,6 +39,9 @@
 
     ],
     "UICKeyChainStore": [
+
+    ],
+    "ReactiveCocoa": [
 
     ]
   }

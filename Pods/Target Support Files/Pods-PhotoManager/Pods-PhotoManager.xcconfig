@@ -1,0 +1,1 @@
+PODS_PHOTOMANAGER_OTHER_LDFLAGS = -framework "UIKit, Photos"

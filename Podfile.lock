@@ -8,34 +8,68 @@ PODS:
   - CocoaLumberjack/Extensions (2.0.0):
     - CocoaLumberjack/Default
   - CocoaSecurity (1.2.4)
+  - FastttCamera (0.3.0):
+    - FastttCamera/Default (= 0.3.0)
+  - FastttCamera/Default (0.3.0)
   - GPUImage (0.1.6)
-  - Mantle (2.0):
-    - Mantle/extobjc (= 2.0)
-  - Mantle/extobjc (2.0)
+  - JVFloatLabeledTextField (1.0.4)
+  - Mantle (2.0.2):
+    - Mantle/extobjc (= 2.0.2)
+  - Mantle/extobjc (2.0.2)
   - Moment (0.1.0):
     - CocoaLumberjack
     - CocoaSecurity
     - GPUImage
     - Mantle
     - NYXImagesKit
+    - ReactiveCocoa
     - UICKeyChainStore
   - NYXImagesKit (2.3)
+  - PhotoManager (0.1.0)
+  - pop (1.0.7)
+  - ReactiveCocoa (2.5):
+    - ReactiveCocoa/UI (= 2.5)
+  - ReactiveCocoa/Core (2.5):
+    - ReactiveCocoa/no-arc
+  - ReactiveCocoa/no-arc (2.5)
+  - ReactiveCocoa/UI (2.5):
+    - ReactiveCocoa/Core
+  - ReactiveTableViewBinding (1.0):
+    - ReactiveCocoa (~> 2.4)
   - UICKeyChainStore (2.0.4)
+  - VBFPopFlatButton (0.0.6):
+    - pop
 
 DEPENDENCIES:
+  - FastttCamera
+  - JVFloatLabeledTextField
   - Moment (from `../Moment`)
+  - PhotoManager (from `../PhotoManager`)
+  - pop
+  - ReactiveTableViewBinding
+  - UICKeyChainStore
+  - VBFPopFlatButton
 
 EXTERNAL SOURCES:
   Moment:
     :path: ../Moment
+  PhotoManager:
+    :path: ../PhotoManager
 
 SPEC CHECKSUMS:
   CocoaLumberjack: a6f77d987d65dc7ba86b0f84db7d0b9084f77bcb
   CocoaSecurity: d288a6f87e0f363823d2cb83e753814a6944f71a
+  FastttCamera: 6c406118c275030aacddaa1a1a2a5f7032dc8c51
   GPUImage: 4675ce4a5370ca92fcea8623b2a08b8f0c51b940
-  Mantle: d7c75b6fb789b20f7ae30cd0d09435fe545896ff
-  Moment: 4a6fe183a0009e684085b5cfa5d05626c9867622
+  JVFloatLabeledTextField: 18b05449d479733841b2c451c87e201a45de26e2
+  Mantle: 967fd31ea0220890b2e76589198996b534bb3fb1
+  Moment: 4b2f16f07f2c9c7bb215699c4794868001b3f7ba
   NYXImagesKit: 8163e3335a40eaa173ca5bbbf81fafb57d3947eb
+  PhotoManager: 51264482e64e4249475846534aa4a070a56c73f5
+  pop: 628ffc631644601567ee8bfaaaea493ebd7d0923
+  ReactiveCocoa: e2db045570aa97c695e7aa97c2bcab222ae51f4a
+  ReactiveTableViewBinding: f925165a270dc51a3bc02ace494a2f212ae04498
   UICKeyChainStore: 69eb0c3a6f669bccf16ba88de3b9069b71501361
+  VBFPopFlatButton: 782344da63f104c279a857d806e065117a7e1196
 
 COCOAPODS: 0.37.1

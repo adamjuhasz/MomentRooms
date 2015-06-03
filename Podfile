@@ -1,2 +1,10 @@
 platform :ios, '7.0'
 pod 'Moment', :path => '../Moment'
+pod 'UICKeyChainStore'
+pod 'PhotoManager', :path => '../PhotoManager'
+pod 'FastttCamera'
+pod 'pop'
+pod 'VBFPopFlatButton'
+pod 'ReactiveTableViewBinding'
+pod 'JVFloatLabeledTextField'
+
