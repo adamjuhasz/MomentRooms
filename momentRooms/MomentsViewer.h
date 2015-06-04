@@ -10,7 +10,7 @@
 #import <Moment/MomentRoom.h>
 #import <ReactiveTableViewBinding/CEObservableMutableArray.h>
 
-@interface RoomViewController : UIViewController
+@interface MomentsViewer : UIView
 
 @property MomentRoom *myRoom;
 @property (nonatomic, strong) CEObservableMutableArray *momentViewModels;

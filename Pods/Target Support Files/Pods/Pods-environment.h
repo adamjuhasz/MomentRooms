@@ -36,6 +36,12 @@
 #define COCOAPODS_VERSION_MINOR_CocoaSecurity 2
 #define COCOAPODS_VERSION_PATCH_CocoaSecurity 4
 
+// ColorUtils
+#define COCOAPODS_POD_AVAILABLE_ColorUtils
+#define COCOAPODS_VERSION_MAJOR_ColorUtils 1
+#define COCOAPODS_VERSION_MINOR_ColorUtils 1
+#define COCOAPODS_VERSION_PATCH_ColorUtils 3
+
 // FastttCamera
 #define COCOAPODS_POD_AVAILABLE_FastttCamera
 #define COCOAPODS_VERSION_MAJOR_FastttCamera 0
@@ -125,6 +131,12 @@
 #define COCOAPODS_VERSION_MAJOR_UICKeyChainStore 2
 #define COCOAPODS_VERSION_MINOR_UICKeyChainStore 0
 #define COCOAPODS_VERSION_PATCH_UICKeyChainStore 4
+
+// UIColor+ContrastingColor
+#define COCOAPODS_POD_AVAILABLE_UIColor_ContrastingColor
+#define COCOAPODS_VERSION_MAJOR_UIColor_ContrastingColor 0
+#define COCOAPODS_VERSION_MINOR_UIColor_ContrastingColor 0
+#define COCOAPODS_VERSION_PATCH_UIColor_ContrastingColor 1
 
 // VBFPopFlatButton
 #define COCOAPODS_POD_AVAILABLE_VBFPopFlatButton

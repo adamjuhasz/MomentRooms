@@ -7,4 +7,6 @@ pod 'pop'
 pod 'VBFPopFlatButton'
 pod 'ReactiveTableViewBinding'
 pod 'JVFloatLabeledTextField'
+pod 'ColorUtils'
+pod 'UIColor+ContrastingColor'
 

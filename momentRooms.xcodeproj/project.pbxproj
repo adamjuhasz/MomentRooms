@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		2E1C58D71B0D23D100A42D88 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C58D61B0D23D100A42D88 /* main.m */; };
 		2E1C58DA1B0D23D100A42D88 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C58D91B0D23D100A42D88 /* AppDelegate.m */; };
-		2E1C58DD1B0D23D100A42D88 /* RoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C58DC1B0D23D100A42D88 /* RoomViewController.m */; };
+		2E1C58DD1B0D23D100A42D88 /* MomentsViewer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C58DC1B0D23D100A42D88 /* MomentsViewer.m */; };
 		2E1C58E21B0D23D100A42D88 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2E1C58E11B0D23D100A42D88 /* Images.xcassets */; };
 		2E1C58E51B0D23D100A42D88 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2E1C58E31B0D23D100A42D88 /* LaunchScreen.xib */; };
 		2E1C58F11B0D23D100A42D88 /* momentRoomsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C58F01B0D23D100A42D88 /* momentRoomsTests.m */; };
@@ -46,6 +46,7 @@
 		2E4E01D31B1F7F970077C970 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01D21B1F7F970077C970 /* LoginViewController.m */; };
 		2E4E01D61B1F80460077C970 /* UIViewController+UIViewController_PushPop.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01D51B1F80460077C970 /* UIViewController+UIViewController_PushPop.m */; };
 		2E4E01D91B1F94B70077C970 /* PFUser+Digits.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01D81B1F94B70077C970 /* PFUser+Digits.m */; };
+		2E4E01DC1B1FE3DD0077C970 /* RoomPlate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01DB1B1FE3DD0077C970 /* RoomPlate.m */; };
 		C2C076E4ACC47B5C3A3BBD64 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D7E2521DC314819A0A79ABC /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -65,8 +66,8 @@
 		2E1C58D61B0D23D100A42D88 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2E1C58D81B0D23D100A42D88 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2E1C58D91B0D23D100A42D88 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		2E1C58DB1B0D23D100A42D88 /* RoomViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoomViewController.h; sourceTree = "<group>"; };
-		2E1C58DC1B0D23D100A42D88 /* RoomViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoomViewController.m; sourceTree = "<group>"; };
+		2E1C58DB1B0D23D100A42D88 /* MomentsViewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MomentsViewer.h; sourceTree = "<group>"; };
+		2E1C58DC1B0D23D100A42D88 /* MomentsViewer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MomentsViewer.m; sourceTree = "<group>"; };
 		2E1C58E11B0D23D100A42D88 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		2E1C58E41B0D23D100A42D88 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		2E1C58EA1B0D23D100A42D88 /* momentRoomsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = momentRoomsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -116,6 +117,8 @@
 		2E4E01D51B1F80460077C970 /* UIViewController+UIViewController_PushPop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+UIViewController_PushPop.m"; sourceTree = "<group>"; };
 		2E4E01D71B1F94B70077C970 /* PFUser+Digits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "PFUser+Digits.h"; path = "FXPhotoEditView/PFUser+Digits.h"; sourceTree = "<group>"; };
 		2E4E01D81B1F94B70077C970 /* PFUser+Digits.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "PFUser+Digits.m"; path = "FXPhotoEditView/PFUser+Digits.m"; sourceTree = "<group>"; };
+		2E4E01DA1B1FE3DD0077C970 /* RoomPlate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RoomPlate.h; sourceTree = "<group>"; };
+		2E4E01DB1B1FE3DD0077C970 /* RoomPlate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RoomPlate.m; sourceTree = "<group>"; };
 		4D7E2521DC314819A0A79ABC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		683B31765AC65F512FD42DB1 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C350757DE1E5832DF845A447 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -188,21 +191,21 @@
 				2E1C58D91B0D23D100A42D88 /* AppDelegate.m */,
 				2E4E01D11B1F7F970077C970 /* LoginViewController.h */,
 				2E4E01D21B1F7F970077C970 /* LoginViewController.m */,
-				2E4E01B91B1E4AFE0077C970 /* IntroScreenViewController.h */,
-				2E4E01BA1B1E4AFE0077C970 /* IntroScreenViewController.m */,
 				2E4E01D41B1F80460077C970 /* UIViewController+UIViewController_PushPop.h */,
 				2E4E01D51B1F80460077C970 /* UIViewController+UIViewController_PushPop.m */,
-				2E1C58DB1B0D23D100A42D88 /* RoomViewController.h */,
-				2E1C58DC1B0D23D100A42D88 /* RoomViewController.m */,
+				2E4E01B91B1E4AFE0077C970 /* IntroScreenViewController.h */,
+				2E4E01BA1B1E4AFE0077C970 /* IntroScreenViewController.m */,
+				2E4E01DA1B1FE3DD0077C970 /* RoomPlate.h */,
+				2E4E01DB1B1FE3DD0077C970 /* RoomPlate.m */,
 				2E4E01C41B1E7EEF0077C970 /* Moment Collectio */,
 				2E1C59201B0D584200A42D88 /* MomentsCloud.h */,
 				2E1C59211B0D584200A42D88 /* MomentsCloud.m */,
-				2E1C58E11B0D23D100A42D88 /* Images.xcassets */,
-				2E1C58E31B0D23D100A42D88 /* LaunchScreen.xib */,
-				2E1C58D41B0D23D100A42D88 /* Supporting Files */,
 				2E1C59321B165AC100A42D88 /* FilterSelectionViewController.h */,
 				2E1C59331B165AC100A42D88 /* FilterSelectionViewController.m */,
 				2E4E01D01B1F7F650077C970 /* Photo Selector */,
+				2E1C58E11B0D23D100A42D88 /* Images.xcassets */,
+				2E1C58E31B0D23D100A42D88 /* LaunchScreen.xib */,
+				2E1C58D41B0D23D100A42D88 /* Supporting Files */,
 			);
 			path = momentRooms;
 			sourceTree = "<group>";
@@ -247,6 +250,8 @@
 		2E4E01C41B1E7EEF0077C970 /* Moment Collectio */ = {
 			isa = PBXGroup;
 			children = (
+				2E1C58DB1B0D23D100A42D88 /* MomentsViewer.h */,
+				2E1C58DC1B0D23D100A42D88 /* MomentsViewer.m */,
 				2E4E01BC1B1E65C10077C970 /* MomentTableViewCell.h */,
 				2E4E01BD1B1E65C10077C970 /* MomentTableViewCell.m */,
 				2E4E01C11B1E674C0077C970 /* MomentViewModel.h */,
@@ -463,7 +468,8 @@
 			files = (
 				2E1C59341B165AC100A42D88 /* FilterSelectionViewController.m in Sources */,
 				2E4E01C31B1E674C0077C970 /* MomentViewModel.m in Sources */,
-				2E1C58DD1B0D23D100A42D88 /* RoomViewController.m in Sources */,
+				2E1C58DD1B0D23D100A42D88 /* MomentsViewer.m in Sources */,
+				2E4E01DC1B1FE3DD0077C970 /* RoomPlate.m in Sources */,
 				2E1C58DA1B0D23D100A42D88 /* AppDelegate.m in Sources */,
 				2E4E01D91B1F94B70077C970 /* PFUser+Digits.m in Sources */,
 				2E1C592E1B1507E500A42D88 /* CameraControl.m in Sources */,

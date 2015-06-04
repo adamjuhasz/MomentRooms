@@ -7,11 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Moment/MomentRoom.h>
 
 @interface PhotoSelectionViewController : UIViewController
 
-@property MomentRoom *room;
 @property UIImage *thumbnailOfSelectedImage;
 @property UIImage *selectedImage;
 

@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
+#import <ColorUtils/ColorUtils.h>
 
 #define keychainPasswordKey(username) [NSString stringWithFormat:@"%@%@", @"password", username]
 
@@ -296,7 +297,7 @@
     newRoom[@"name"] = room.roomName;
     newRoom[@"backgroundImage"] = room.backgroundImage;
     newRoom[@"expirationTime"] = @(room.roomLifetime);
-    newRoom[@"backgroundColor"] =  room.backgroundColor;
+    newRoom[@"backgroundColor"] =  room.backgroundColor.stringValue;
     return newRoom;
 }
 
@@ -307,7 +308,7 @@
     newRoom.roomName = room[@"name"];
     newRoom.backgroundImage = room[@"backgroundImage"];
     newRoom.roomLifetime = [room[@"expirationTime"] floatValue];
-    newRoom.backgroundColor = room[@"backgroundColor"];
+    newRoom.backgroundColor = [UIColor colorWithString:room[@"backgroundColor"]];
     return newRoom;
 }
 
@@ -353,17 +354,28 @@
     NSMutableArray *rooms = [NSMutableArray array];
     for (PFObject *aRoom in cachedRooms) {
         BOOL roomIsCached = NO;
+        MomentRoom *newRoom = [self convertToMomentRoomFromPFObject:aRoom];
         if (self.subscribedRooms) {
             for (MomentRoom *room in self.subscribedRooms) {
                 if ([room.roomid isEqualToString:aRoom.objectId]) {
                     roomIsCached = YES;
+                    //change room details
+                    if ([room.roomName isEqualToString:newRoom.roomName] == NO) {
+                        room.roomName = newRoom.roomName;
+                    }
+                    if (room.roomLifetime != newRoom.roomLifetime) {
+                        room.roomLifetime = newRoom.roomLifetime;
+                    }
+                    //should the background be changable
+                    if ([room.backgroundColor isEquivalentToColor:newRoom.backgroundColor] == NO) {
+                        room.backgroundColor = newRoom.backgroundColor;
+                    }
                     continue;
                 }
             }
             
         }
         if (roomIsCached == NO) {
-            MomentRoom *newRoom = [self convertToMomentRoomFromPFObject:aRoom];
             [rooms addObject:newRoom];
         }
     }
@@ -437,7 +449,23 @@
 
 - (void)subscribeToRoomWithID:(NSString *)roomID
 {
+    if ([PFUser currentUser] == nil) {
+        return;
+    }
     
+    PFQuery *roleQuery = [PFRole query];
+    [roleQuery whereKey:@"name" equalTo:roomID];
+    [roleQuery getFirstObjectInBackgroundWithBlock:^(PFObject *roleObject,  NSError *error){
+        if (!error) {
+            PFRole *role = (PFRole*)roleObject;
+            [role.users addObject:[PFUser currentUser]];
+            [role saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                if (succeeded) {
+                    [self getsubscribedRoomsWithCompletionBlock:nil];
+                }
+            }];
+        }
+    }];
 }
 
 NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*?<>";
