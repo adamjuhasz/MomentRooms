@@ -11,12 +11,13 @@
 #import <UICKeyChainStore/UICKeyChainStore.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import <ColorUtils/ColorUtils.h>
+#import <CocoaSecurity/CocoaSecurity.h>
 
 #define keychainPasswordKey(username) [NSString stringWithFormat:@"%@%@", @"password", username]
 
 @interface MomentsCloud ()
 {
-   
+    NSMutableArray *loadedMoments;
 }
 @end
 
@@ -37,18 +38,24 @@
     self = [super init];
     if (self) {
         self.mostRecentMoments = [NSMutableArray array];
-        [self loadCachedsubscribedRooms];
+        loadedMoments = [NSMutableArray array];
+        
+        @weakify(self);
         [RACObserve(self, loggedIn) subscribeNext:^(NSNumber *isLoggedIn) {
+            @strongify(self);
             if ([isLoggedIn boolValue]) {
+                [self loadCachedsubscribedRooms];
+                [self getCachedMomentsForSubscribedRoomsWithCompletionBlock:nil];
                 [self getsubscribedRoomsWithCompletionBlock:^{
                     [self getMomentsForSubscribedRoomsWithCompletionBlock:nil];
                 }];
             }
         }];
+        
         if ([PFUser currentUser]) {
             self.loggedIn = YES;
         }
-        [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(getMomentsForSubscribedRooms) userInfo:nil repeats:YES];
+        //[NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(getMomentsForSubscribedRooms) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -123,6 +130,10 @@
 - (void)createRoom:(MomentRoom*)newRoom
 {
     PFObject *createdRoom = [self convertToPFObjectFromMomentRoom:newRoom];
+    if (createdRoom == nil) {
+        return;
+    }
+    
     [createdRoom pinInBackground];
     [createdRoom saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (!error) {
@@ -170,6 +181,13 @@
     [roomObject addMoments:[NSArray arrayWithObject:moment]];
 }
 
+- (NSString*)pathForMomentsImage:(Moment*)moment
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:moment.postid];
+}
+
 - (PFObject*)convertToPFObjectFromMoment:(Moment*)moment
 {
     NSData *imageData = UIImageJPEGRepresentation(moment.image, 1.0);
@@ -199,6 +217,12 @@
 
 - (Moment*)convertToMomentFromPFObject:(PFObject*)post
 {
+    for (Moment *aCachedMoment in loadedMoments) {
+        if ([aCachedMoment.postid isEqualToString:post.objectId]) {
+            return aCachedMoment;
+        }
+    }
+    
     Moment *newMoment = [[Moment alloc] init];
     newMoment.postid = post.objectId;
     newMoment.dateCreated = post.createdAt;
@@ -218,14 +242,34 @@
         newMoment.coordinates = [[CLLocation alloc] initWithLatitude:location.latitude longitude:location.longitude];
     }
     
-    PFFile *file = post[@"image"];
-    [file getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error){
-        UIImage *image = [UIImage imageWithData:imageData];
+    NSError *readError;
+    NSData *encryptedFileData = [NSData dataWithContentsOfFile:[self pathForMomentsImage:newMoment] options:0 error:&readError];
+    if (encryptedFileData) {
+        //CocoaSecurityResult * sha = [CocoaSecurity sha384:@"Moments"];
+        //NSData *aesKey = [sha.data subdataWithRange:NSMakeRange(0, 32)];
+        //NSData *aesIv = [sha.data subdataWithRange:NSMakeRange(32, 16)];
+        //NSData *decryptedData = [[CocoaSecurity aesDecryptWithData:encryptedFileData key:aesKey iv:aesIv] data];
+        UIImage *image = [UIImage imageWithData:encryptedFileData];
         newMoment.image = image;
-                         }
-                         progressBlock:^(int percentDone){
-                             newMoment.downloadPercent = (float)percentDone/100.0;
-                         }];
+    } else {
+        PFFile *file = post[@"image"];
+        [file getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error){
+                                //CocoaSecurityResult * sha = [CocoaSecurity sha384:@"Moments"];
+                                //NSData *aesKey = [sha.data subdataWithRange:NSMakeRange(0, 32)];
+                                //NSData *aesIv = [sha.data subdataWithRange:NSMakeRange(32, 16)];
+                                //NSData *encryptedData = [[CocoaSecurity aesDecryptWithData:imageData key:aesKey iv:aesIv] data];
+            
+                                NSError *writeError;
+                                [imageData writeToFile:[self pathForMomentsImage:newMoment] options:NSDataWritingAtomic error:&writeError];
+                                UIImage *image = [UIImage imageWithData:imageData];
+                                newMoment.image = image;
+                             }
+                             progressBlock:^(int percentDone){
+                                 newMoment.downloadPercent = (float)percentDone/100.0;
+                             }];
+    }
+    
+    [loadedMoments addObject:newMoment];
     return newMoment;
 }
 
@@ -247,19 +291,7 @@
     [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *moments, NSError *error){
         if (!error) {
             [PFObject pinAll:moments];
-            NSLog(@"found %ld moments", (unsigned long)moments.count);
-            NSMutableArray *momentsArray = [self mutableArrayValueForKey:@"mostRecentMoments"];
-            for (int i=0; i<moments.count; i++) {
-                PFObject *object = moments[i];
-                Moment *newMoment = [self convertToMomentFromPFObject:object];
-                for (MomentRoom *aroom in self.subscribedRooms) {
-                    if ([aroom.roomid isEqualToString:newMoment.roomId]) {
-                        [aroom addMoments:[NSArray arrayWithObject:newMoment]];
-                    }
-                }
-                //NSLog(@"Generated moment: %@", newMoment);
-                [momentsArray insertObject:newMoment atIndex:i];
-            }
+            NSArray *momentsArray = [self processMomentsFromParse:moments];
             if (completionBlock) {
                 completionBlock(momentsArray);
             }
@@ -268,16 +300,109 @@
         }
     }];
 }
-- (NSArray*)getMomentsForRoomNamed:(NSString*)roomName
+
+- (void)getCachedMomentsForSubscribedRoomsWithCompletionBlock:(void (^)(NSArray*))completionBlock
 {
-    return nil;
+    PFQuery *momentsQuery = [PFQuery queryWithClassName:@"Post"];
+    [momentsQuery whereKey:@"expiresAt" greaterThan:[NSDate date]];
+    [[momentsQuery fromLocalDatastore] ignoreACLs];
+    [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *moments, NSError *error){
+        if (!error) {
+             NSArray *momentsArray = [self processMomentsFromParse:moments];
+            if (completionBlock) {
+                completionBlock(momentsArray);
+            }
+        }
+    }];
+}
+
+- (NSMutableArray*)processMomentsFromParse:(NSArray*)moments
+{
+    NSMutableArray *momentsArray = [self mutableArrayValueForKey:@"mostRecentMoments"];
+    for (int i=0; i<moments.count; i++) {
+        PFObject *object = moments[i];
+        Moment *newMoment = [self convertToMomentFromPFObject:object];
+        for (MomentRoom *aroom in self.subscribedRooms) {
+            if ([aroom.roomid isEqualToString:newMoment.roomId]) {
+                [aroom addMoments:[NSArray arrayWithObject:newMoment]];
+            }
+        }
+        [momentsArray insertObject:newMoment atIndex:i];
+    }
+    
+    NSLog(@"proccessing %ld moments, of those %ld were new", (unsigned long)moments.count, (unsigned long)momentsArray.count);
+    return momentsArray;
+}
+
+- (void)getCachedMomentsForRoom:(MomentRoom*)room WithCompletionBlock:(void (^)(NSArray*))completionBlock
+{
+    PFObject *parseRoom = [self convertToPFObjectFromMomentRoom:room];
+    if (parseRoom == nil) {
+        return;
+    }
+    
+    PFQuery *momentsQuery = [PFQuery queryWithClassName:@"Post"];
+    [momentsQuery whereKey:@"room" equalTo:parseRoom];
+    [momentsQuery whereKey:@"expiresAt" greaterThan:[NSDate date]];
+    [[momentsQuery fromLocalDatastore] ignoreACLs];
+    [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *moments, NSError *error){
+        if (!error) {
+            NSArray *momentsArray = [self processMomentsFromParse:moments];
+            if (completionBlock) {
+                completionBlock(momentsArray);
+            }
+        } else {
+            NSLog(@"error getting moments: %@", error);
+        }
+    }];
+}
+
+- (void)getMomentsForRoom:(MomentRoom*)room WithCompletionBlock:(void (^)(NSArray*))completionBlock
+{
+    PFObject *parseRoom = [self convertToPFObjectFromMomentRoom:room];
+    if (parseRoom == nil) {
+        return;
+    }
+    
+    PFQuery *momentsQuery = [PFQuery queryWithClassName:@"Post"];
+    [momentsQuery whereKey:@"room" equalTo:parseRoom];
+    [momentsQuery whereKey:@"expiresAt" greaterThan:[NSDate date]];
+    [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *moments, NSError *error){
+        if (!error) {
+            [PFObject pinAll:moments];
+            NSArray *momentsArray = [self processMomentsFromParse:moments];
+            if (completionBlock) {
+                completionBlock(momentsArray);
+            }
+        } else {
+            NSLog(@"error getting moments: %@", error);
+        }
+    }];
 }
 
 - (PFObject*)findPFObjectForRoom:(MomentRoom*)room
 {
     PFQuery *roomQuery = [PFQuery queryWithClassName:@"Room"];
+    [[roomQuery fromLocalDatastore] ignoreACLs];
     PFObject *cachedRoom = [roomQuery getObjectWithId:room.roomid];
     return cachedRoom;
+}
+
+-(BOOL)MomentRoomIsValid:(MomentRoom*)room
+{
+    if (room.roomid == nil) {
+        return NO;
+    }
+    if (room.roomLifetime <= 0) {
+        return NO;
+    }
+    if (room.roomName == nil || [room.roomName isEqualToString:@""]) {
+        return NO;
+    }
+    if (room.backgroundColor == nil) {
+        return NO;
+    }
+    return YES;
 }
 
 - (PFObject*)convertToPFObjectFromMomentRoom:(MomentRoom*)room
@@ -285,6 +410,10 @@
     PFObject *newRoom = [self findPFObjectForRoom:room];
     if (newRoom) {
         return newRoom;
+    }
+
+    if ([self MomentRoomIsValid:room] == NO) {
+        return nil;
     }
     
     newRoom = [PFObject objectWithClassName:@"Room"];

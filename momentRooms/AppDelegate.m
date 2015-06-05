@@ -32,8 +32,11 @@
     // https://parse.com/docs/ios_guide#localdatastore/iOS
     [Parse enableLocalDatastore];
     
-    //[Fabric with:@[CrashlyticsKit, DigitsKit]];
+#ifdef DEBUG
     [Fabric with:@[DigitsKit]];
+#else
+    [Fabric with:@[CrashlyticsKit, DigitsKit]];
+#endif
 
     
     // Initialize Parse.

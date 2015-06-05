@@ -35,7 +35,8 @@
 //consumption
 - (void)subscribeToRoomWithID:(NSString*)roomID;
 - (void)getMomentsForSubscribedRoomsWithCompletionBlock:(void (^)(NSArray*))completionBlock;
-- (void)getMomentsForRoomID:(NSString*)roomID;
+- (void)getMomentsForRoom:(MomentRoom*)room WithCompletionBlock:(void (^)(NSArray*))completionBlock;
+- (void)getCachedMomentsForRoom:(MomentRoom*)room WithCompletionBlock:(void (^)(NSArray*))completionBlock;
 - (void)getsubscribedRoomsWithCompletionBlock:(void (^)(void))completionBlock;
 - (NSArray*)cachedSubscribedRooms;
 - (NSArray*)cachedMomentsForRoom:(MomentRoom*)room;

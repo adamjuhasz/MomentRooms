@@ -109,9 +109,25 @@
         newMomentView.moment = demo;
         [filterScrollview addSubview:newMomentView];
         [filteringMomentViews addObject:newMomentView];
+        
+        UITapGestureRecognizer *selector = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userTappedAFilter:)];
+        [newMomentView addGestureRecognizer:selector];
+        
+        UILongPressGestureRecognizer *holdee = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(userIsHoldingDownOnAFilter:)];
+        [newMomentView addGestureRecognizer:holdee];
     }
     
     filterScrollview.contentSize = CGSizeMake(filterBounds.size.width * i + 5 * MAX((i-1),0), filterScrollview.bounds.size.height);
+}
+
+- (void)userTappedAFilter:(UITapGestureRecognizer*)tapper
+{
+    
+}
+
+- (void)userIsHoldingDownOnAFilter:(UILongPressGestureRecognizer*)recognizer
+{
+    
 }
      
 - (void)updateTimers

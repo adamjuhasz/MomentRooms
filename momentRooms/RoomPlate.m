@@ -28,7 +28,7 @@
         
         text = [[UITextField alloc] initWithFrame:CGRectMake(0 , 20, frame.size.width, 30)];
         text.font = [UIFont fontWithName:@"HelveticaNeue-Medium " size:16];
-        //text.enabled = NO;
+        text.userInteractionEnabled = NO;
         text.textAlignment = NSTextAlignmentCenter;
         [self addSubview:text];
         
@@ -72,7 +72,9 @@
         
         lifetimeSlider.ticksListener = labels;
         
+        @weakify(self);
         [RACObserve(self, room) subscribeNext:^(MomentRoom *newRoom) {
+            @strongify(self);
             [RACObserve(newRoom, roomName) subscribeNext:^(NSString *roomName) {
                 text.text = roomName;
             }];

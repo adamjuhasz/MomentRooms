@@ -17,6 +17,7 @@
 #import "PhotoSelectionViewController.h"
 #import <Moment/ListOfMomentFilters.h>
 #import "CreateARoomPlate.h"
+#import "UIImage+ANImageBitmapRep.h"
 
 @interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate>
 {
@@ -101,6 +102,14 @@
     [plate addGestureRecognizer:panner];
     [verticalPanning addObject:panner];
     panner.delegate = self;
+    
+    UITapGestureRecognizer *tapper = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapping:)];
+    [plate addGestureRecognizer:tapper];
+}
+
+- (void)tapping:(UITapGestureRecognizer*)recognizer
+{
+    [self lockInRoom:(RoomPlate*)recognizer.view];
 }
 
 - (void)panning:(UIPanGestureRecognizer*)recognizer
@@ -119,8 +128,6 @@
                 //negative velocuty is moving towards top of screen
                 if (velocity.y < 0) {
                     [self lockInRoom:(RoomPlate*)recognizer.view];
-                    recognizer.enabled = NO;
-                    
                 } else {
                     recognizer.view.center = centerLocation;
                     recognizer.view.bounds = CGRectMake(0, 0, height*9/16, height);
@@ -186,8 +193,7 @@
 - (void)lockInRoom:(RoomPlate*)room
 {
     selectedRoom = room;
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    [self setNeedsStatusBarAppearanceUpdate];
+    [[MomentsCloud sharedCloud] getCachedMomentsForRoom:room.room WithCompletionBlock:nil];
     
     CGRect frameInController = [self.view convertRect:selectedRoom.frame fromView:scroller];
     
@@ -195,8 +201,8 @@
     for (UIGestureRecognizer *recognizer in selectedRoom.gestureRecognizers) {
         if ([recognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
             panner = (UIPanGestureRecognizer*)recognizer;
-            break;
         }
+        recognizer.enabled = NO;
     }
     
     [room removeFromSuperview];
@@ -283,11 +289,11 @@
         } else {
             return NO;
         }
-    }] subscribeNext:^(UIImage *fullsizeImage) {
+    }] subscribeNext:^(UIImage *fullsizeImage) {        
         [self popController:photoSelector withSuccess:nil];
         
         Moment *newMoment = [[Moment alloc] init];
-        newMoment.image = fullsizeImage;
+        newMoment.image = [fullsizeImage imageFillingFrame:CGSizeMake(MIN(fullsizeImage.size.width, fullsizeImage.size.height), MIN(fullsizeImage.size.width, fullsizeImage.size.height))];
         newMoment.dateCreated = [NSDate date];
         newMoment.timeLifetime = selectedRoom.room.roomLifetime;
         
