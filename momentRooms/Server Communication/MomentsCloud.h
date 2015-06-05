@@ -14,6 +14,7 @@
 
 @interface MomentsCloud : NSObject
 
+@property NSMutableArray *mostRecentMoments;
 @property NSMutableArray *subscribedRooms;
 @property BOOL loggedIn;
 
@@ -28,7 +29,7 @@
 - (NSString*)loggedInUserName;
 
 //creation
-- (MomentRoom*)createRoomNamed:(NSString*)roomName withBackground:(UIImage*)backgroundImage withBackgroundColor:(UIColor*)backgroundColor andExpirationTime:(NSTimeInterval)expirationTime;
+- (void)createRoom:(MomentRoom*)newRoom;
 - (void)addMoment:(Moment*)moment ToRoom:(MomentRoom*)room;
 
 //consumption

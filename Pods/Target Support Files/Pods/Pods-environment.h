@@ -126,6 +126,12 @@
 #define COCOAPODS_VERSION_MINOR_ReactiveTableViewBinding 0
 #define COCOAPODS_VERSION_PATCH_ReactiveTableViewBinding 0
 
+// TGPControls
+#define COCOAPODS_POD_AVAILABLE_TGPControls
+#define COCOAPODS_VERSION_MAJOR_TGPControls 1
+#define COCOAPODS_VERSION_MINOR_TGPControls 0
+#define COCOAPODS_VERSION_PATCH_TGPControls 0
+
 // UICKeyChainStore
 #define COCOAPODS_POD_AVAILABLE_UICKeyChainStore
 #define COCOAPODS_VERSION_MAJOR_UICKeyChainStore 2

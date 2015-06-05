@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import <Moment/MomentRoom.h>
+#import "MomentsViewer.h"
+#import <VBFPopFlatButton/VBFPopFlatButton.h>
+#import <TGPControls/TGPDiscreteSlider.h>
+#import <TGPControls/TGPCamelLabels.h>
 
 @protocol RoomDelegate <NSObject>
 @required
@@ -16,6 +20,16 @@
 @end
 
 @interface RoomPlate : UIView
+{
+    UITextField *text;
+    UIView *feed;
+    CGFloat height;
+    VBFPopFlatButton *minimizeButton;
+    VBFPopFlatButton *shareButton;
+    MomentsViewer *momentDisplayer;
+    TGPDiscreteSlider *lifetimeSlider;
+    TGPCamelLabels *labels;
+}
 
 @property UIColor *contrastColor;
 @property CGFloat percentGrown;

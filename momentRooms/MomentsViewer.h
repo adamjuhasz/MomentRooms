@@ -15,5 +15,7 @@
 @property MomentRoom *myRoom;
 @property (nonatomic, strong) CEObservableMutableArray *momentViewModels;
 
+@property id <UITableViewDelegate> tableDelegate;
+
 @end
 

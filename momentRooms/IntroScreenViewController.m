@@ -8,6 +8,7 @@
 
 #import "IntroScreenViewController.h"
 #import "MomentsCloud.h"
+#import <Moment/MomentView.h>
 #import <pop/POP.h>
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import "UIViewController+UIViewController_PushPop.h"
@@ -15,6 +16,7 @@
 #import <VBFPopFlatButton/VBFPopFlatButton.h>
 #import "PhotoSelectionViewController.h"
 #import <Moment/ListOfMomentFilters.h>
+#import "CreateARoomPlate.h"
 
 @interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate>
 {
@@ -35,9 +37,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    MomentsCloud *singleCloud = [MomentsCloud sharedCloud];
+    
     self.view.backgroundColor = [UIColor whiteColor];
     
     verticalPanning = [NSMutableArray array];
+    
+    MomentView *momentViewer = [[MomentView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.width)];
+    [self.view addSubview:momentViewer];
+    [[RACObserve(singleCloud, mostRecentMoments) filter:^BOOL(NSArray *moments) {
+        return (moments.count > 0);
+    }] subscribeNext:^(NSArray *moments) {
+        momentViewer.moment = moments[0];
+    }];
     
     height = self.view.bounds.size.height - self.view.bounds.size.width - 1;
     scroller = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-height, self.view.bounds.size.width, height)];
@@ -53,7 +65,7 @@
     [addButton addTarget:self action:@selector(newMoment) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:addButton];
     
-    MomentsCloud *singleCloud = [MomentsCloud sharedCloud];
+    
     [[RACObserve(singleCloud, subscribedRooms) filter:^BOOL(NSArray *rooms) {
         if (rooms.count > 0 && selectedRoom == nil) {
             return YES;
@@ -63,22 +75,32 @@
     }] subscribeNext:^(NSArray *rooms) {
         cachedRooms = [rooms copy];
         int i=0;
-        for (i=0; i<rooms.count; i++) {
-            MomentRoom *theRoomModel = rooms[i];
+        CreateARoomPlate *createARoom = [[CreateARoomPlate alloc] initWithFrame:CGRectMake((height*9/16+1)*i, 0, height*9/16, height)];
+        MomentRoom *createARoomTemplate = [[MomentRoom alloc] init];
+        createARoomTemplate.backgroundColor = [UIColor grayColor];
+        [self setupPlate:createARoom withRoom:createARoomTemplate intoPosition:0];
+ 
+        for (i=1; i<rooms.count+1; i++) {
+            MomentRoom *theRoomModel = rooms[i-1];
             RoomPlate *aRoom = [[RoomPlate alloc] initWithFrame:CGRectMake((height*9/16+1)*i, 0, height*9/16, height)];
-            aRoom.backgroundColor = theRoomModel.backgroundColor;
-            aRoom.room = theRoomModel;
-            aRoom.delegate = self;
-            [scroller addSubview:aRoom];
-            
-            UIPanGestureRecognizer *panner = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panning:)];
-            [aRoom addGestureRecognizer:panner];
-            [verticalPanning addObject:panner];
-            panner.delegate = self;
+            [self setupPlate:aRoom withRoom:theRoomModel intoPosition:i];
         }
         scroller.contentSize = CGSizeMake(height*9/16*i, height);
     }];
 
+}
+
+- (void)setupPlate:(RoomPlate*)plate withRoom:(MomentRoom*)room intoPosition:(NSInteger)i
+{
+    plate.frame = CGRectMake((height*9/16+1)*i, 0, height*9/16, height);
+    plate.room = room;
+    plate.delegate = self;
+    [scroller addSubview:plate];
+    
+    UIPanGestureRecognizer *panner = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panning:)];
+    [plate addGestureRecognizer:panner];
+    [verticalPanning addObject:panner];
+    panner.delegate = self;
 }
 
 - (void)panning:(UIPanGestureRecognizer*)recognizer
@@ -96,8 +118,8 @@
             if (fabs(velocity.y) > 20) {
                 //negative velocuty is moving towards top of screen
                 if (velocity.y < 0) {
-                    recognizer.enabled = NO;
                     [self lockInRoom:(RoomPlate*)recognizer.view];
+                    recognizer.enabled = NO;
                     
                 } else {
                     recognizer.view.center = centerLocation;
@@ -167,24 +189,57 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [self setNeedsStatusBarAppearanceUpdate];
     
+    CGRect frameInController = [self.view convertRect:selectedRoom.frame fromView:scroller];
+    
+    UIPanGestureRecognizer *panner;
+    for (UIGestureRecognizer *recognizer in selectedRoom.gestureRecognizers) {
+        if ([recognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+            panner = (UIPanGestureRecognizer*)recognizer;
+            break;
+        }
+    }
+    
     [room removeFromSuperview];
+    room.bounds = CGRectMake(0, 0, frameInController.size.width, frameInController.size.height);
+    room.center = CGPointMake(CGRectGetMidX(frameInController), CGRectGetMidY(frameInController));
     [self.view insertSubview:selectedRoom belowSubview:addButton];
     
-    room.bounds = self.view.bounds;
-    room.center = self.view.center;
+    POPSpringAnimation *boundAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewBounds];
+    boundAnimation.toValue = [NSValue valueWithCGRect:self.view.bounds];
+    boundAnimation.springSpeed = 15;
+    if (panner) {
+        CGRect velocity = CGRectZero;
+        CGPoint velocityInView = [panner velocityInView:self.view];
+        velocity.size.width = velocityInView.x,
+        velocity.size.height = velocityInView.y;
+        boundAnimation.velocity = [NSValue valueWithCGRect:velocity];
+    }
+    [selectedRoom pop_addAnimation:boundAnimation forKey:@"bounds"];
+    
+    POPSpringAnimation *centerAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewCenter];
+    centerAnimation.toValue = [NSValue valueWithCGPoint:self.view.center];
+    centerAnimation.springSpeed = 15;
+    if (panner) {
+        centerAnimation.velocity = [NSValue valueWithCGPoint:[panner velocityInView:self.view]];
+    }
+    [selectedRoom pop_addAnimation:centerAnimation forKey:@"center"];
+
     
     [room showMoments];
     
     addButton.roundBackgroundColor = selectedRoom.room.backgroundColor;
     addButton.tintColor = selectedRoom.contrastColor;
     addButton.hidden = NO;
-    
-    NSLog(@"%@", room.gestureRecognizers);
 }
 
 - (void)minimizeRoom
 {
     NSInteger location = [cachedRooms indexOfObject:selectedRoom.room];
+    if (location == NSNotFound) {
+        location = 0;
+    } else {
+        location++;
+    }
     CGRect currentFrameInScroller = [scroller convertRect:selectedRoom.frame fromView:self.view];
     [selectedRoom removeFromSuperview];
     

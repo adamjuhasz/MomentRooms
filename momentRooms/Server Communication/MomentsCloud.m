@@ -36,6 +36,7 @@
 {
     self = [super init];
     if (self) {
+        self.mostRecentMoments = [NSMutableArray array];
         [self loadCachedsubscribedRooms];
         [RACObserve(self, loggedIn) subscribeNext:^(NSNumber *isLoggedIn) {
             if ([isLoggedIn boolValue]) {
@@ -119,27 +120,20 @@
 }
 
 //creation
-- (MomentRoom*)createRoomNamed:(NSString*)roomName withBackground:(UIImage*)backgroundImage withBackgroundColor:(UIColor*)backgroundColor andExpirationTime:(NSTimeInterval)expirationTime
+- (void)createRoom:(MomentRoom*)newRoom
 {
-    NSData *imageData = UIImageJPEGRepresentation(backgroundImage, 1.0);
-    PFFile *backgroundImageParseFile = [PFFile fileWithName:@"background.jpg" data:imageData];
-    
-    PFObject *newRoom = [PFObject objectWithClassName:@"Room"];
-    newRoom[@"name"] = roomName;
-    newRoom[@"backgroundImage"] = backgroundImageParseFile;
-    newRoom[@"expirationTime"] = @(expirationTime);
-    newRoom[@"backgroundColor"] =  backgroundColor;
-    [newRoom pinInBackground];
-    [newRoom saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+    PFObject *createdRoom = [self convertToPFObjectFromMomentRoom:newRoom];
+    [createdRoom pinInBackground];
+    [createdRoom saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (!error) {
-
+            
         } else {
-            NSLog(@"Error creating room %@; %@", roomName, error);
-            [newRoom unpinInBackground];
+            NSLog(@"Error creating room %@; %@", createdRoom, error);
+            [createdRoom unpinInBackground];
         }
+        [self loadCachedsubscribedRooms];
     }];
-    
-    return [self convertToMomentRoomFromPFObject:newRoom];
+    [self loadCachedsubscribedRooms];
 }
 
 - (void)addMoment:(Moment*)moment ToRoom:(MomentRoom*)roomObject
@@ -254,8 +248,9 @@
         if (!error) {
             [PFObject pinAll:moments];
             NSLog(@"found %ld moments", (unsigned long)moments.count);
-            NSMutableArray *momentsArray = [NSMutableArray array];
-            for (PFObject *object in moments) {
+            NSMutableArray *momentsArray = [self mutableArrayValueForKey:@"mostRecentMoments"];
+            for (int i=0; i<moments.count; i++) {
+                PFObject *object = moments[i];
                 Moment *newMoment = [self convertToMomentFromPFObject:object];
                 for (MomentRoom *aroom in self.subscribedRooms) {
                     if ([aroom.roomid isEqualToString:newMoment.roomId]) {
@@ -263,7 +258,7 @@
                     }
                 }
                 //NSLog(@"Generated moment: %@", newMoment);
-                [momentsArray addObject:newMoment];
+                [momentsArray insertObject:newMoment atIndex:i];
             }
             if (completionBlock) {
                 completionBlock(momentsArray);
@@ -295,7 +290,11 @@
     newRoom = [PFObject objectWithClassName:@"Room"];
     newRoom.objectId = room.roomid;
     newRoom[@"name"] = room.roomName;
-    newRoom[@"backgroundImage"] = room.backgroundImage;
+    if (room.backgroundImage) {
+        NSData *imageData = UIImageJPEGRepresentation(room.backgroundImage, 1.0);
+        PFFile *backgroundImageParseFile = [PFFile fileWithName:@"background.jpg" data:imageData];
+        newRoom[@"backgroundImage"] = backgroundImageParseFile;
+    }
     newRoom[@"expirationTime"] = @(room.roomLifetime);
     newRoom[@"backgroundColor"] =  room.backgroundColor.stringValue;
     return newRoom;

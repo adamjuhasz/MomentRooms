@@ -23,6 +23,8 @@
     RACSignal *momentsSingle;
     UITableView *roomsTable;
     UINib *nib;
+    id _delegate;
+    CETableViewBindingHelper *helper;
 }
 
 @end
@@ -38,6 +40,21 @@
         roomsTable.backgroundColor = [UIColor clearColor];
         [self addSubview:roomsTable];
         nib = [UINib nibWithNibName:@"MomentTableViewCell" bundle:nil];
+        
+        [[RACObserve(self, myRoom)
+          filter:^BOOL(MomentRoom *value) {
+              if (value) {
+                  return YES;
+              } else {
+                  return NO;
+              }
+          }]
+         subscribeNext:^(MomentRoom *room) {
+             helper = [CETableViewBindingHelper bindingHelperForTableView:roomsTable
+                                                             sourceSignal:RACObserve(room, moments)
+                                                         selectionCommand:nil
+                                                             templateCell:nib];
+         }];
     }
     return self;
 }
@@ -58,20 +75,17 @@
 {
     [super willMoveToSuperview:newSuperview];
     
-    [[RACObserve(self, myRoom)
-      filter:^BOOL(MomentRoom *value) {
-          if (value) {
-              return YES;
-          } else {
-              return NO;
-          }
-      }]
-     subscribeNext:^(MomentRoom *room) {
-         [CETableViewBindingHelper bindingHelperForTableView:roomsTable
-                                                sourceSignal:RACObserve(room, moments)
-                                            selectionCommand:nil
-                                                templateCell:nib];
-     }];
+   
+}
+
+- (void)setTableDelegate:(id<UITableViewDelegate>)tableDelegate
+{
+    helper.delegate = tableDelegate;
+}
+
+- (id<UITableViewDelegate>)tableDelegate
+{
+    return helper.delegate;
 }
 
 @end

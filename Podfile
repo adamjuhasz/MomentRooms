@@ -9,4 +9,4 @@ pod 'ReactiveTableViewBinding'
 pod 'JVFloatLabeledTextField'
 pod 'ColorUtils'
 pod 'UIColor+ContrastingColor'
-
+pod 'TGPControls'
