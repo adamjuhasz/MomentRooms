@@ -28,6 +28,7 @@
         scroller = [[UIScrollView alloc] initWithFrame:self.bounds];
         scroller.pagingEnabled = YES;
         scroller.delegate = self;
+        scroller.showsHorizontalScrollIndicator = scroller.showsVerticalScrollIndicator = NO;
         [self addSubview:scroller];
         
         momentViews = [NSMutableArray array];

@@ -25,6 +25,7 @@
         shareButton.currentButtonType = buttonAddType;
         text.layer.borderColor = self.contrastColor.CGColor;
         text.layer.borderWidth=0.0;
+        text.userInteractionEnabled = YES;
         
         UIImage *gradientImage = [UIImage imageNamed:@"gradient.png"];
         bitmapRep = [[ANImageBitmapRep alloc] initWithImage:gradientImage];

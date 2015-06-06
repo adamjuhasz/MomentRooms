@@ -27,9 +27,11 @@
         self.layer.cornerRadius = 3.0;
         
         text = [[UITextField alloc] initWithFrame:CGRectMake(0 , 20, frame.size.width, 30)];
-        text.font = [UIFont fontWithName:@"HelveticaNeue-Medium " size:16];
+        text.font = [UIFont fontWithName:@"HelveticaNeue-Medium " size:34];
         text.userInteractionEnabled = NO;
         text.textAlignment = NSTextAlignmentCenter;
+        text.minimumFontSize = 8;
+        text.adjustsFontSizeToFitWidth = YES;
         [self addSubview:text];
         
         feed = [[UIView alloc] initWithFrame:self.bounds];
@@ -133,15 +135,16 @@
         height = bounds.size.height;
     }
     if (bounds.size.width > 300) {
-        text.font = [UIFont fontWithName:@"HelveticaNeue-Medium " size:34];
+        //text.font = [UIFont fontWithName:@"HelveticaNeue-Medium " size:34];
         [text sizeToFit];
         text.bounds = CGRectMake(0, 0, bounds.size.width-80, 44);
         //feed.hidden = NO;
         //feed.frame = CGRectMake(0, height, bounds.size.width, 600);
         self.layer.cornerRadius = 0;
     } else {
-        text.font = [UIFont fontWithName:@"HelveticaNeue-Medium " size:8];
+        //text.font = [UIFont fontWithName:@"HelveticaNeue-Medium " size:8];
         [text sizeToFit];
+        text.bounds = CGRectMake(0, 0, bounds.size.width, text.bounds.size.height);
         self.layer.cornerRadius = 3.0;
     }
     
@@ -218,9 +221,14 @@
     [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:messageController animated:YES completion:nil];
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    NSLog(@"now at %@", NSStringFromCGPoint(scrollView.contentOffset));
+}
+
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-    NSLog(@"velocity: %@", NSStringFromCGPoint(velocity));
+    NSLog(@"velocity: %@ at %@", NSStringFromCGPoint(velocity), NSStringFromCGPoint(scrollView.contentOffset));
 }
 
 @end

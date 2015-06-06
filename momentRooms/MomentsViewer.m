@@ -37,6 +37,7 @@
     if (self) {
         _momentViewModels = [[CEObservableMutableArray alloc] init];
         roomsTable = [[UITableView alloc] initWithFrame:self.bounds];
+        roomsTable.separatorStyle = UITableViewCellSeparatorStyleNone;
         roomsTable.backgroundColor = [UIColor clearColor];
         [self addSubview:roomsTable];
         nib = [UINib nibWithNibName:@"MomentTableViewCell" bundle:nil];
