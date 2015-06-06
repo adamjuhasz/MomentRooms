@@ -174,6 +174,7 @@
             moment.dateCreated = [newPost createdAt];
             //NSLog(@"%@", moment);
         } else {
+            [newPost unpinInBackground];
             NSLog(@"couldnt upload moment because %@", error);
         }
     }];
@@ -269,7 +270,24 @@
                              }];
     }
     
-    [loadedMoments addObject:newMoment];
+    int i=0;
+    for (i=0; i<loadedMoments.count; i++) {
+        Moment *cachedMoment = loadedMoments[i];
+        if ([newMoment.dateCreated compare:cachedMoment.dateCreated] == NSOrderedDescending) {
+            break;
+        }
+    }
+    [loadedMoments insertObject:newMoment atIndex:i];
+    
+    if (i < 5) {
+        NSMutableArray *recentMoments = [self mutableArrayValueForKey:@"mostRecentMoments"];
+        [recentMoments insertObject:newMoment atIndex:i];
+        if (recentMoments.count >= 5) {
+            [recentMoments removeLastObject];
+        }
+    }
+    
+
     return newMoment;
 }
 
@@ -318,7 +336,7 @@
 
 - (NSMutableArray*)processMomentsFromParse:(NSArray*)moments
 {
-    NSMutableArray *momentsArray = [self mutableArrayValueForKey:@"mostRecentMoments"];
+    NSMutableArray *momentsArray = [NSMutableArray array];
     for (int i=0; i<moments.count; i++) {
         PFObject *object = moments[i];
         Moment *newMoment = [self convertToMomentFromPFObject:object];

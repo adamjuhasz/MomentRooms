@@ -62,6 +62,7 @@
 		2E4E02091B2164C30077C970 /* BitmapDrawManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01FB1B2164C30077C970 /* BitmapDrawManipulator.m */; };
 		2E4E020A1B2164C30077C970 /* BitmapRotationManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01FD1B2164C30077C970 /* BitmapRotationManipulator.m */; };
 		2E4E020B1B2164C30077C970 /* BitmapScaleManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01FF1B2164C30077C970 /* BitmapScaleManipulator.m */; };
+		2EA6DC021B228243001345D9 /* RecentMomentsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EA6DC011B228243001345D9 /* RecentMomentsView.m */; };
 		C2C076E4ACC47B5C3A3BBD64 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D7E2521DC314819A0A79ABC /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -162,6 +163,8 @@
 		2E4E01FD1B2164C30077C970 /* BitmapRotationManipulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BitmapRotationManipulator.m; sourceTree = "<group>"; };
 		2E4E01FE1B2164C30077C970 /* BitmapScaleManipulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BitmapScaleManipulator.h; sourceTree = "<group>"; };
 		2E4E01FF1B2164C30077C970 /* BitmapScaleManipulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BitmapScaleManipulator.m; sourceTree = "<group>"; };
+		2EA6DC001B228243001345D9 /* RecentMomentsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentMomentsView.h; sourceTree = "<group>"; };
+		2EA6DC011B228243001345D9 /* RecentMomentsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentMomentsView.m; sourceTree = "<group>"; };
 		4D7E2521DC314819A0A79ABC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		683B31765AC65F512FD42DB1 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C350757DE1E5832DF845A447 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -239,6 +242,8 @@
 				2E4E01D21B1F7F970077C970 /* LoginViewController.m */,
 				2E4E01D41B1F80460077C970 /* UIViewController+UIViewController_PushPop.h */,
 				2E4E01D51B1F80460077C970 /* UIViewController+UIViewController_PushPop.m */,
+				2EA6DC001B228243001345D9 /* RecentMomentsView.h */,
+				2EA6DC011B228243001345D9 /* RecentMomentsView.m */,
 				2E4E01B91B1E4AFE0077C970 /* IntroScreenViewController.h */,
 				2E4E01BA1B1E4AFE0077C970 /* IntroScreenViewController.m */,
 				2E4E01DA1B1FE3DD0077C970 /* RoomPlate.h */,
@@ -593,6 +598,7 @@
 				2E4E02031B2164C30077C970 /* OSCommonImage.m in Sources */,
 				2E4E02011B2164C30077C970 /* BitmapContextRep.m in Sources */,
 				2E4E01D31B1F7F970077C970 /* LoginViewController.m in Sources */,
+				2EA6DC021B228243001345D9 /* RecentMomentsView.m in Sources */,
 				2E4E02001B2164C30077C970 /* ANImageBitmapRep.m in Sources */,
 				2E4E02091B2164C30077C970 /* BitmapDrawManipulator.m in Sources */,
 				2E4E01BF1B1E65C10077C970 /* MomentTableViewCell.m in Sources */,

@@ -18,6 +18,7 @@
 #import <Moment/ListOfMomentFilters.h>
 #import "CreateARoomPlate.h"
 #import "UIImage+ANImageBitmapRep.h"
+#import "RecentMomentsView.h"
 
 @interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate>
 {
@@ -44,13 +45,9 @@
     
     verticalPanning = [NSMutableArray array];
     
-    MomentView *momentViewer = [[MomentView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.width)];
+    RecentMomentsView *momentViewer = [[RecentMomentsView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.width)];
     [self.view addSubview:momentViewer];
-    [[RACObserve(singleCloud, mostRecentMoments) filter:^BOOL(NSArray *moments) {
-        return (moments.count > 0);
-    }] subscribeNext:^(NSArray *moments) {
-        momentViewer.moment = moments[0];
-    }];
+    
     
     height = self.view.bounds.size.height - self.view.bounds.size.width - 1;
     scroller = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-height, self.view.bounds.size.width, height)];

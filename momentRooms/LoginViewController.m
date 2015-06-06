@@ -105,7 +105,7 @@
         if(!error){
             // do something with user
             PFUser *current = [PFUser currentUser];
-            if ([user[@"isNewDigitUser"] boolValue] == YES) {
+            if ([current[@"isNewDigitUser"] boolValue] == YES) {
                 for (UIView *view in hiddenComponents) {
                     view.hidden = NO;
                 }
