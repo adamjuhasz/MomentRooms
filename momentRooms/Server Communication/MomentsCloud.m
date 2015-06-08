@@ -408,9 +408,6 @@
 
 -(BOOL)MomentRoomIsValid:(MomentRoom*)room
 {
-    if (room.roomid == nil) {
-        return NO;
-    }
     if (room.roomLifetime <= 0) {
         return NO;
     }
