@@ -39,6 +39,7 @@
         roomsTable = [[UITableView alloc] initWithFrame:self.bounds];
         roomsTable.separatorStyle = UITableViewCellSeparatorStyleNone;
         roomsTable.backgroundColor = [UIColor clearColor];
+        [roomsTable setSeparatorStyle:UITableViewCellSeparatorStyleNone];
         [self addSubview:roomsTable];
         nib = [UINib nibWithNibName:@"MomentTableViewCell" bundle:nil];
         
@@ -55,6 +56,7 @@
                                                              sourceSignal:RACObserve(room, moments)
                                                          selectionCommand:nil
                                                              templateCell:nib];
+             roomsTable.rowHeight = self.bounds.size.width;
          }];
     }
     return self;
@@ -64,19 +66,19 @@
 {
     [super setBounds:bounds];
     roomsTable.frame = self.bounds;
+    roomsTable.rowHeight = self.bounds.size.width;
 }
 
 - (void)setFrame:(CGRect)frame
 {
     [super setFrame:frame];
     roomsTable.frame = self.bounds;
+    roomsTable.rowHeight = self.bounds.size.width;
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview
 {
     [super willMoveToSuperview:newSuperview];
-    
-   
 }
 
 - (void)setTableDelegate:(id<UITableViewDelegate>)tableDelegate

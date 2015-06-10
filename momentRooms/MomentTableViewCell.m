@@ -25,4 +25,16 @@
     self.monetDisplay.moment = momentModel;
 }
 
+- (void)setBounds:(CGRect)bounds
+{
+    self.monetDisplay.frame = bounds;
+    [super setBounds:bounds];
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+    self.monetDisplay.frame = self.bounds;
+}
+
 @end
