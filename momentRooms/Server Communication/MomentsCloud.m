@@ -232,8 +232,8 @@
     newMoment.roomId = roomObject.objectId;
     newMoment.timeLifetime = [post[@"lifetime"] doubleValue];
     newMoment.text = post[@"text"];
-    newMoment.filterSettings = post[@"filterSettings"];
     newMoment.filterName = post[@"filterName"];
+    newMoment.filterSettings = post[@"filterSettings"];
     newMoment.userid = post[@"userid"];
     newMoment.likeCount = [post[@"likeCount"] unsignedIntegerValue];
     newMoment.commentCount = [post[@"commentCount"] unsignedIntegerValue];
