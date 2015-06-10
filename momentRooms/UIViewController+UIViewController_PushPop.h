@@ -15,4 +15,6 @@
 - (void)popController:(UIViewController *)controller withDirection:(UIRectEdge)direction withSuccess:(void (^)(void))success
 ;
 - (void)popController:(UIViewController*)controller withSuccess:(void (^)(void))success;
+- (void)popAllControllers;
+
 @end

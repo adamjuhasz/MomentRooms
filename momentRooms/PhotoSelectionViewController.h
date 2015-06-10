@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UIViewController+UIViewController_PushPop.h"
 
 @interface PhotoSelectionViewController : UIViewController
 
 @property UIImage *thumbnailOfSelectedImage;
 @property UIImage *selectedImage;
+@property UIViewController *delegate;
 
 @end

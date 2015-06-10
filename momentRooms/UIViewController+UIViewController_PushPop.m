@@ -92,6 +92,17 @@
     [self popController:controller withDirection:UIRectEdgeRight withSuccess:success];
 }
 
+- (void)popAllControllers
+{
+    NSMutableArray *controllersToPop = [self.childViewControllers mutableCopy];
+    while (controllersToPop.count != 0) {
+        UIViewController *aController = [controllersToPop lastObject];
+        [controllersToPop removeObject:aController];
+        
+        [self popController:aController withSuccess:nil];
+    }
+}
+
 - (void)removeController:(UIViewController*)controller
 {
     [controller willMoveToParentViewController:nil];

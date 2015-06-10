@@ -9,11 +9,13 @@
 #import "CreateARoomPlate.h"
 #import "MomentsCloud.h"
 #import "ANImageBitmapRep/ANImageBitmapRep.h"
+#import "VBFPopFlatButton+BigHit.h"
 
 @interface CreateARoomPlate ()
 {
     UIImageView *gradient;
     ANImageBitmapRep *bitmapRep;
+    RACSignal *createActiveSignal;
 }
 @end
 @implementation CreateARoomPlate
@@ -39,7 +41,8 @@
         [gradient addGestureRecognizer:panning];
         gradient.userInteractionEnabled = YES;
         
-        [RACObserve(self, contrastColor) subscribeNext:^(UIColor *contrast) {
+        __weak CreateARoomPlate *weakSelf = self;
+        [RACObserve(weakSelf, contrastColor) subscribeNext:^(UIColor *contrast) {
             text.layer.borderColor = contrast.CGColor;
         }];
         
@@ -48,7 +51,7 @@
                                               return @(roomname.length > 2);
                                           }];
         
-        RACSignal *createActiveSignal = [RACSignal combineLatest:@[validRoomName]
+        createActiveSignal = [RACSignal combineLatest:@[validRoomName]
                                                           reduce:^id(NSNumber *isValid) {
                                                               return @([isValid boolValue]);
                                                           }];

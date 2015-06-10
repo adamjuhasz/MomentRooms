@@ -34,6 +34,7 @@
 		2E1C593A1B165E4600A42D88 /* FXPhotoEditGrid.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E1C59361B165E4600A42D88 /* FXPhotoEditGrid.png */; };
 		2E1C593B1B165E4600A42D88 /* FXPhotoEditGrid@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E1C59371B165E4600A42D88 /* FXPhotoEditGrid@2x.png */; };
 		2E1C593C1B165E4600A42D88 /* FXPhotoEditView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C59391B165E4600A42D88 /* FXPhotoEditView.m */; };
+		2E35ECF21B28C40100849766 /* VBFPopFlatButton+BigHit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E35ECF11B28C40100849766 /* VBFPopFlatButton+BigHit.m */; };
 		2E4E01BB1B1E4AFE0077C970 /* IntroScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01BA1B1E4AFE0077C970 /* IntroScreenViewController.m */; };
 		2E4E01BF1B1E65C10077C970 /* MomentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01BD1B1E65C10077C970 /* MomentTableViewCell.m */; };
 		2E4E01C01B1E65C10077C970 /* MomentTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2E4E01BE1B1E65C10077C970 /* MomentTableViewCell.xib */; };
@@ -115,6 +116,8 @@
 		2E1C59371B165E4600A42D88 /* FXPhotoEditGrid@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "FXPhotoEditGrid@2x.png"; sourceTree = "<group>"; };
 		2E1C59381B165E4600A42D88 /* FXPhotoEditView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FXPhotoEditView.h; sourceTree = "<group>"; };
 		2E1C59391B165E4600A42D88 /* FXPhotoEditView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FXPhotoEditView.m; sourceTree = "<group>"; };
+		2E35ECF01B28C40100849766 /* VBFPopFlatButton+BigHit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "VBFPopFlatButton+BigHit.h"; sourceTree = "<group>"; };
+		2E35ECF11B28C40100849766 /* VBFPopFlatButton+BigHit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "VBFPopFlatButton+BigHit.m"; sourceTree = "<group>"; };
 		2E4E01B91B1E4AFE0077C970 /* IntroScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroScreenViewController.h; sourceTree = "<group>"; };
 		2E4E01BA1B1E4AFE0077C970 /* IntroScreenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IntroScreenViewController.m; sourceTree = "<group>"; };
 		2E4E01BC1B1E65C10077C970 /* MomentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MomentTableViewCell.h; sourceTree = "<group>"; };
@@ -248,13 +251,13 @@
 				2E4E01BA1B1E4AFE0077C970 /* IntroScreenViewController.m */,
 				2E4E01DA1B1FE3DD0077C970 /* RoomPlate.h */,
 				2E4E01DB1B1FE3DD0077C970 /* RoomPlate.m */,
+				2E35ECF01B28C40100849766 /* VBFPopFlatButton+BigHit.h */,
+				2E35ECF11B28C40100849766 /* VBFPopFlatButton+BigHit.m */,
 				2E4E01DD1B20FFBC0077C970 /* CreateARoomPlate.h */,
 				2E4E01DE1B20FFBC0077C970 /* CreateARoomPlate.m */,
 				2E4E01C41B1E7EEF0077C970 /* Moment Collectio */,
 				2E1C59201B0D584200A42D88 /* MomentsCloud.h */,
 				2E1C59211B0D584200A42D88 /* MomentsCloud.m */,
-				2E1C59321B165AC100A42D88 /* FilterSelectionViewController.h */,
-				2E1C59331B165AC100A42D88 /* FilterSelectionViewController.m */,
 				2E4E01D01B1F7F650077C970 /* Photo Selector */,
 				2E1C58E11B0D23D100A42D88 /* Images.xcassets */,
 				2E1C58E31B0D23D100A42D88 /* LaunchScreen.xib */,
@@ -321,6 +324,8 @@
 				2E1C592A1B15062500A42D88 /* PhotoSelectionViewController.m */,
 				2E1C592C1B1507E500A42D88 /* CameraControl.h */,
 				2E1C592D1B1507E500A42D88 /* CameraControl.m */,
+				2E1C59321B165AC100A42D88 /* FilterSelectionViewController.h */,
+				2E1C59331B165AC100A42D88 /* FilterSelectionViewController.m */,
 			);
 			name = "Photo Selector";
 			sourceTree = "<group>";
@@ -424,6 +429,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2E1C58F41B0D23D100A42D88 /* Build configuration list for PBXNativeTarget "momentRooms" */;
 			buildPhases = (
+				2EE3B5C81B2790B30042C71A /* ShellScript */,
 				45AE96D1E624368FE06B10A3 /* Check Pods Manifest.lock */,
 				2E1C58CD1B0D23D100A42D88 /* Sources */,
 				2E1C58CE1B0D23D100A42D88 /* Frameworks */,
@@ -539,6 +545,19 @@
 			shellPath = /bin/sh;
 			shellScript = "./Fabric.framework/run 2231fe0b1e370f1d9ffb9b97b35a1cb4d24359fc cddd15fd7561247dd9c391ce2666fad7b05aa70c42d938765933616888fc1cdb";
 		};
+		2EE3B5C81B2790B30042C71A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PROJECT_DIR}/tools/bump_build_number.sh \"${PROJECT_DIR}/${INFOPLIST_FILE}\"";
+		};
 		45AE96D1E624368FE06B10A3 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -578,6 +597,7 @@
 			files = (
 				2E4E02061B2164C30077C970 /* CGImageContainer.m in Sources */,
 				2E1C59341B165AC100A42D88 /* FilterSelectionViewController.m in Sources */,
+				2E35ECF21B28C40100849766 /* VBFPopFlatButton+BigHit.m in Sources */,
 				2E4E01C31B1E674C0077C970 /* MomentViewModel.m in Sources */,
 				2E4E02071B2164C30077C970 /* BitmapContextManipulator.m in Sources */,
 				2E4E02041B2164C30077C970 /* UIImage+ANImageBitmapRep.m in Sources */,

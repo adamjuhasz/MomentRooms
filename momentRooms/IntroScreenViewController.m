@@ -19,6 +19,7 @@
 #import "CreateARoomPlate.h"
 #import "UIImage+ANImageBitmapRep.h"
 #import "RecentMomentsView.h"
+#import "FilterSelectionViewController.h"
 
 @interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate>
 {
@@ -65,7 +66,7 @@
     
     
     [[RACObserve(singleCloud, subscribedRooms) filter:^BOOL(NSArray *rooms) {
-        if (rooms.count > 0 && selectedRoom == nil) {
+        if (rooms != nil && rooms.count > 0 && selectedRoom == nil) {
             return YES;
         } else {
             return NO;
@@ -278,27 +279,34 @@
 - (void)newMoment
 {
     PhotoSelectionViewController *photoSelector = [[PhotoSelectionViewController alloc] init];
+    photoSelector.delegate = self;
     [self pushController:photoSelector withSuccess:nil];
     
+    FilterSelectionViewController *filterSelector = [[FilterSelectionViewController alloc] init];
+    filterSelector.delegate = self;
+    filterSelector.room = selectedRoom.room;
+    
+    [[RACObserve(photoSelector, thumbnailOfSelectedImage) filter:^BOOL(id value) {
+        return (value != nil);
+    }] subscribeNext:^(UIImage *thumbnail) {
+        [self pushController:filterSelector withSuccess:nil];
+    } completed:^{
+        NSLog(@"RAC: Completed RACObserve on photoSelector");
+    }];
+    
     [[RACObserve(photoSelector, selectedImage) filter:^BOOL(UIImage *selectedImage) {
-        if (selectedImage) {
-            return YES;
-        } else {
-            return NO;
-        }
-    }] subscribeNext:^(UIImage *fullsizeImage) {        
-        [self popController:photoSelector withSuccess:nil];
-        
-        Moment *newMoment = [[Moment alloc] init];
-        newMoment.image = [fullsizeImage imageFillingFrame:CGSizeMake(MIN(fullsizeImage.size.width, fullsizeImage.size.height), MIN(fullsizeImage.size.width, fullsizeImage.size.height))];
-        newMoment.dateCreated = [NSDate date];
-        newMoment.timeLifetime = selectedRoom.room.roomLifetime;
-        
-        NSArray *filterList = ArrayOfAllMomentFilters;
-        newMoment.filterName = filterList[arc4random_uniform((unsigned int)(filterList.count))];
-        [newMoment.filter randomizeSettings];
-        
-        [[MomentsCloud sharedCloud] addMoment:newMoment ToRoom:selectedRoom.room];
+        return (selectedImage != nil);
+    }] subscribeNext:^(UIImage *fullsizeImage) {
+        filterSelector.editableImage = fullsizeImage;
+    }];
+    
+    [[RACObserve(filterSelector, aNewMoment) filter:^BOOL(Moment *aNewMoment) {
+        return (aNewMoment != nil);
+    }] subscribeNext:^(Moment *theNewMoment) {
+        [[MomentsCloud sharedCloud] addMoment:theNewMoment ToRoom:selectedRoom.room];
+        [self popAllControllers];
+    } completed:^{
+        NSLog(@"RAC: Completed RACObserve on filterSelector");
     }];
 }
 

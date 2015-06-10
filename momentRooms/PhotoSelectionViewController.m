@@ -45,18 +45,13 @@
     [flatButton addTarget:self action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:flatButton];
     
-    [RACObserve(cameraPreview, thumbnail) subscribeNext:^(UIImage *thumbnail) {
-        self.thumbnailOfSelectedImage = thumbnail;
-    }];
-    
-    [RACObserve(cameraPreview, fullsizeImag) subscribeNext:^(UIImage *fullsize) {
-        self.selectedImage = fullsize;
-    }];
+    RAC(self,thumbnailOfSelectedImage) = RACObserve(cameraPreview, thumbnail);
+    RAC(self,selectedImage) = RACObserve(cameraPreview, fullsizeImag);
 }
 
 - (void)goBack
 {
-    
+    [self.delegate popController:self withSuccess:nil];
 }
 
 - (void)userDidChooseThumbnail:(UIImage*)thumbnail
