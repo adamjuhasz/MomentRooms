@@ -21,7 +21,7 @@
 #import "RecentMomentsView.h"
 #import "FilterSelectionViewController.h"
 
-@interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate>
+@interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate, RecentMomentsDelegate>
 {
     NSMutableArray *verticalPanning;
     CGPoint centerLocation;
@@ -32,6 +32,7 @@
     
     RoomPlate *selectedRoom;
     NSArray *cachedRooms;
+    NSMutableArray *cachedRoomPlates;
 }
 @end
 
@@ -45,10 +46,11 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     verticalPanning = [NSMutableArray array];
+    cachedRoomPlates = [NSMutableArray array];
     
     RecentMomentsView *momentViewer = [[RecentMomentsView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.width)];
+    momentViewer.delegate = self;
     [self.view addSubview:momentViewer];
-    
     
     height = self.view.bounds.size.height - self.view.bounds.size.width - 1;
     scroller = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-height, self.view.bounds.size.width, height)];
@@ -73,6 +75,12 @@
         }
     }] subscribeNext:^(NSArray *rooms) {
         cachedRooms = [rooms copy];
+        [verticalPanning removeAllObjects];
+        for (UIView *aView in cachedRoomPlates) {
+            [aView removeFromSuperview];
+        }
+        [cachedRoomPlates removeAllObjects];
+        
         int i=0;
         CreateARoomPlate *createARoom = [[CreateARoomPlate alloc] initWithFrame:CGRectMake((height*9/16+1)*i, 0, height*9/16, height)];
         MomentRoom *createARoomTemplate = [[MomentRoom alloc] init];
@@ -95,6 +103,7 @@
     plate.room = room;
     plate.delegate = self;
     [scroller addSubview:plate];
+    [cachedRoomPlates addObject:plate];
     
     UIPanGestureRecognizer *panner = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panning:)];
     [plate addGestureRecognizer:panner];
@@ -186,6 +195,19 @@
         return YES;
     }
     return NO;
+}
+
+- (void)openRoom:(MomentRoom *)theRoom
+{
+    for (RoomPlate *plate in cachedRoomPlates) {
+        if (plate.room.roomid == nil || [plate.room.roomid isEqualToString:@""]) {
+            continue;
+        }
+        if ([plate.room.roomid isEqualToString:theRoom.roomid]) {
+            [self lockInRoom:plate];
+            break;
+        }
+    }
 }
 
 - (void)lockInRoom:(RoomPlate*)room

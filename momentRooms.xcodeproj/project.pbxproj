@@ -64,6 +64,7 @@
 		2E4E020A1B2164C30077C970 /* BitmapRotationManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01FD1B2164C30077C970 /* BitmapRotationManipulator.m */; };
 		2E4E020B1B2164C30077C970 /* BitmapScaleManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01FF1B2164C30077C970 /* BitmapScaleManipulator.m */; };
 		2EA6DC021B228243001345D9 /* RecentMomentsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EA6DC011B228243001345D9 /* RecentMomentsView.m */; };
+		2EECEAC61B28CFD300E88965 /* MomentViewWithRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEAC51B28CFD300E88965 /* MomentViewWithRoom.m */; };
 		C2C076E4ACC47B5C3A3BBD64 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D7E2521DC314819A0A79ABC /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -168,6 +169,8 @@
 		2E4E01FF1B2164C30077C970 /* BitmapScaleManipulator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BitmapScaleManipulator.m; sourceTree = "<group>"; };
 		2EA6DC001B228243001345D9 /* RecentMomentsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentMomentsView.h; sourceTree = "<group>"; };
 		2EA6DC011B228243001345D9 /* RecentMomentsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentMomentsView.m; sourceTree = "<group>"; };
+		2EECEAC41B28CFD300E88965 /* MomentViewWithRoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MomentViewWithRoom.h; sourceTree = "<group>"; };
+		2EECEAC51B28CFD300E88965 /* MomentViewWithRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MomentViewWithRoom.m; sourceTree = "<group>"; };
 		4D7E2521DC314819A0A79ABC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		683B31765AC65F512FD42DB1 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C350757DE1E5832DF845A447 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -237,25 +240,15 @@
 				2E4E01E41B2164C30077C970 /* ANImageBitmapRep */,
 				2E4E01E21B2161550077C970 /* gradient.png */,
 				2E1C59351B165E4600A42D88 /* FXPhotoEditView */,
-				2E4E01D71B1F94B70077C970 /* PFUser+Digits.h */,
-				2E4E01D81B1F94B70077C970 /* PFUser+Digits.m */,
 				2E1C58D81B0D23D100A42D88 /* AppDelegate.h */,
 				2E1C58D91B0D23D100A42D88 /* AppDelegate.m */,
 				2E4E01D11B1F7F970077C970 /* LoginViewController.h */,
 				2E4E01D21B1F7F970077C970 /* LoginViewController.m */,
-				2E4E01D41B1F80460077C970 /* UIViewController+UIViewController_PushPop.h */,
-				2E4E01D51B1F80460077C970 /* UIViewController+UIViewController_PushPop.m */,
-				2EA6DC001B228243001345D9 /* RecentMomentsView.h */,
-				2EA6DC011B228243001345D9 /* RecentMomentsView.m */,
+				2EECEAC21B28CEF300E88965 /* Categroeis */,
 				2E4E01B91B1E4AFE0077C970 /* IntroScreenViewController.h */,
 				2E4E01BA1B1E4AFE0077C970 /* IntroScreenViewController.m */,
-				2E4E01DA1B1FE3DD0077C970 /* RoomPlate.h */,
-				2E4E01DB1B1FE3DD0077C970 /* RoomPlate.m */,
-				2E35ECF01B28C40100849766 /* VBFPopFlatButton+BigHit.h */,
-				2E35ECF11B28C40100849766 /* VBFPopFlatButton+BigHit.m */,
-				2E4E01DD1B20FFBC0077C970 /* CreateARoomPlate.h */,
-				2E4E01DE1B20FFBC0077C970 /* CreateARoomPlate.m */,
-				2E4E01C41B1E7EEF0077C970 /* Moment Collectio */,
+				2EECEAC31B28CF2800E88965 /* Room Plates */,
+				2EECEAC71B28D4BC00E88965 /* Recent Moments */,
 				2E1C59201B0D584200A42D88 /* MomentsCloud.h */,
 				2E1C59211B0D584200A42D88 /* MomentsCloud.m */,
 				2E4E01D01B1F7F650077C970 /* Photo Selector */,
@@ -383,6 +376,42 @@
 				2E4E01FF1B2164C30077C970 /* BitmapScaleManipulator.m */,
 			);
 			path = Manipulators;
+			sourceTree = "<group>";
+		};
+		2EECEAC21B28CEF300E88965 /* Categroeis */ = {
+			isa = PBXGroup;
+			children = (
+				2E4E01D71B1F94B70077C970 /* PFUser+Digits.h */,
+				2E4E01D81B1F94B70077C970 /* PFUser+Digits.m */,
+				2E4E01D41B1F80460077C970 /* UIViewController+UIViewController_PushPop.h */,
+				2E4E01D51B1F80460077C970 /* UIViewController+UIViewController_PushPop.m */,
+				2E35ECF01B28C40100849766 /* VBFPopFlatButton+BigHit.h */,
+				2E35ECF11B28C40100849766 /* VBFPopFlatButton+BigHit.m */,
+			);
+			name = Categroeis;
+			sourceTree = "<group>";
+		};
+		2EECEAC31B28CF2800E88965 /* Room Plates */ = {
+			isa = PBXGroup;
+			children = (
+				2E4E01C41B1E7EEF0077C970 /* Moment Collectio */,
+				2E4E01DA1B1FE3DD0077C970 /* RoomPlate.h */,
+				2E4E01DB1B1FE3DD0077C970 /* RoomPlate.m */,
+				2E4E01DD1B20FFBC0077C970 /* CreateARoomPlate.h */,
+				2E4E01DE1B20FFBC0077C970 /* CreateARoomPlate.m */,
+			);
+			name = "Room Plates";
+			sourceTree = "<group>";
+		};
+		2EECEAC71B28D4BC00E88965 /* Recent Moments */ = {
+			isa = PBXGroup;
+			children = (
+				2EA6DC001B228243001345D9 /* RecentMomentsView.h */,
+				2EA6DC011B228243001345D9 /* RecentMomentsView.m */,
+				2EECEAC41B28CFD300E88965 /* MomentViewWithRoom.h */,
+				2EECEAC51B28CFD300E88965 /* MomentViewWithRoom.m */,
+			);
+			name = "Recent Moments";
 			sourceTree = "<group>";
 		};
 		3CD44DBC08854FEBE320B9F3 /* Frameworks */ = {
@@ -610,6 +639,7 @@
 				2E4E01DF1B20FFBC0077C970 /* CreateARoomPlate.m in Sources */,
 				2E4E01D91B1F94B70077C970 /* PFUser+Digits.m in Sources */,
 				2E1C592E1B1507E500A42D88 /* CameraControl.m in Sources */,
+				2EECEAC61B28CFD300E88965 /* MomentViewWithRoom.m in Sources */,
 				2E4E01BB1B1E4AFE0077C970 /* IntroScreenViewController.m in Sources */,
 				2E1C58D71B0D23D100A42D88 /* main.m in Sources */,
 				2E4E02081B2164C30077C970 /* BitmapCropManipulator.m in Sources */,

@@ -7,7 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Moment/MomentRoom.h>
+
+@protocol RecentMomentsDelegate <NSObject>
+@required
+- (void)openRoom:(MomentRoom*)theRoom;
+
+@end
 
 @interface RecentMomentsView : UIView
+
+@property (weak) id <RecentMomentsDelegate> delegate;
 
 @end

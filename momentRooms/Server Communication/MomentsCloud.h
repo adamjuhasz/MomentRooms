@@ -40,5 +40,6 @@
 - (void)getsubscribedRoomsWithCompletionBlock:(void (^)(void))completionBlock;
 - (NSArray*)cachedSubscribedRooms;
 - (NSArray*)cachedMomentsForRoom:(MomentRoom*)room;
+- (MomentRoom*)getCachedRoomWithID:(NSString*)roomID;
 
 @end

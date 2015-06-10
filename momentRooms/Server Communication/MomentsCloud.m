@@ -61,6 +61,7 @@
 }
 
 //user
+#pragma mark User
 - (BOOL)havePasswordForUserNamed:(NSString*)username
 {
     NSString *password = [[UICKeyChainStore keyChainStore] stringForKey:keychainPasswordKey(username)];
@@ -127,6 +128,7 @@
 }
 
 //creation
+#pragma mark Creation
 - (void)createRoom:(MomentRoom*)newRoom
 {
     PFObject *createdRoom = [self convertToPFObjectFromMomentRoom:newRoom];
@@ -181,6 +183,8 @@
     
     [roomObject addMoments:[NSArray arrayWithObject:moment]];
 }
+
+#pragma mark Convert between Moments/Parse
 
 - (NSString*)pathForMomentsImage:(Moment*)moment
 {
@@ -292,6 +296,7 @@
 }
 
 //consumption
+#pragma mark Get Moments
 - (void)getMomentsForSubscribedRooms
 {
     [self getMomentsForSubscribedRoomsWithCompletionBlock:nil];
@@ -406,6 +411,35 @@
     return cachedRoom;
 }
 
+- (NSArray*)cachedMomentsForRoom:(MomentRoom*)room
+{
+    PFQuery *roomQuery = [PFQuery queryWithClassName:@"Room"];
+    [[roomQuery fromLocalDatastore] ignoreACLs];
+    [roomQuery whereKey:@"objectId" equalTo:room.roomid];
+    
+    PFQuery *postQuery = [PFQuery queryWithClassName:@"Post"];
+    [[postQuery fromLocalDatastore] ignoreACLs];
+    [postQuery whereKey:@"room" matchesQuery:roomQuery];
+    [postQuery whereKey:@"expiresAt" greaterThan:[NSDate date]];
+    NSArray *parseMoments = [postQuery findObjects];
+    
+    NSMutableArray *moments = [NSMutableArray array];
+    for (PFObject *parseMoment in parseMoments) {
+        Moment *aMoment = [self convertToMomentFromPFObject:parseMoment];
+        [moments addObject:aMoment];
+    }
+    
+    for (MomentRoom *aRoom in self.subscribedRooms) {
+        if (aRoom.roomid == room.roomid) {
+            [aRoom addMoments:moments];
+        }
+    }
+    
+    return moments;
+}
+
+#pragma mark Convert MomentRoom/Parse
+
 -(BOOL)MomentRoomIsValid:(MomentRoom*)room
 {
     if (room.roomLifetime <= 0) {
@@ -455,6 +489,7 @@
     return newRoom;
 }
 
+#pragma mark Get MomentRooms
 - (void)getsubscribedRoomsWithCompletionBlock:(void (^)(void))completionBlock
 {
     if ([PFUser currentUser] == nil) {
@@ -539,57 +574,17 @@
     return self.subscribedRooms;
 }
 
-- (void)getMomentsForRooms:(NSArray*)rooms
+- (MomentRoom*)getCachedRoomWithID:(NSString*)roomID
 {
-    NSMutableArray *array = [NSMutableArray array];
-    for (PFObject *room in rooms) {
-        [array addObject:room[@"name"]];
-    }
-    [self getMomentsForRoomIDs:array];
+    PFQuery *query = [PFQuery queryWithClassName:@"Room"];
+    [[query fromLocalDatastore] ignoreACLs];
+    [query whereKey:@"objectId" equalTo:roomID];
+    PFObject *object = [query getFirstObject];
+    MomentRoom *room = [self convertToMomentRoomFromPFObject:object];
+    return room;
 }
 
-- (void)getMomentsForRoomIDs:(NSArray*)rooms
-{
-    PFQuery *postQuery = [PFQuery queryWithClassName:@"Post"];
-    [postQuery whereKey:@"room" containedIn:rooms];
-    [postQuery whereKey:@"expiresAt" greaterThan:[NSDate date]];
-    [postQuery findObjectsInBackgroundWithBlock:^(NSArray *rooms, NSError *error){
-        [PFObject pinAll:rooms];
-    }];
-}
-
-- (void)getMomentsForRoomID:(NSString*)roomID
-{
-    [self getMomentsForRoomIDs:[NSArray arrayWithObject:roomID]];
-}
-
-- (NSArray*)cachedMomentsForRoom:(MomentRoom*)room
-{
-    PFQuery *roomQuery = [PFQuery queryWithClassName:@"Room"];
-    [[roomQuery fromLocalDatastore] ignoreACLs];
-    [roomQuery whereKey:@"objectId" equalTo:room.roomid];
-    
-    PFQuery *postQuery = [PFQuery queryWithClassName:@"Post"];
-    [[postQuery fromLocalDatastore] ignoreACLs];
-    [postQuery whereKey:@"room" matchesQuery:roomQuery];
-    [postQuery whereKey:@"expiresAt" greaterThan:[NSDate date]];
-    NSArray *parseMoments = [postQuery findObjects];
-    
-    NSMutableArray *moments = [NSMutableArray array];
-    for (PFObject *parseMoment in parseMoments) {
-        Moment *aMoment = [self convertToMomentFromPFObject:parseMoment];
-        [moments addObject:aMoment];
-    }
-
-    for (MomentRoom *aRoom in self.subscribedRooms) {
-        if (aRoom.roomid == room.roomid) {
-            [aRoom addMoments:moments];
-        }
-    }
-    
-    return moments;
-}
-
+#pragma mark Subscribe to Rooms
 - (void)subscribeToRoomWithID:(NSString *)roomID
 {
     if ([PFUser currentUser] == nil) {
@@ -611,6 +606,7 @@
     }];
 }
 
+#pragma mark Utilties
 NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*?<>";
 - (NSString *)randomStringWithLength:(int)len
 {

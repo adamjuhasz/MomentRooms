@@ -10,8 +10,9 @@
 #import "MomentsCloud.h"
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import <Moment/MomentView.h>
+#import "MomentViewWithRoom.h"
 
-@interface RecentMomentsView () <UIScrollViewDelegate>
+@interface RecentMomentsView () <UIScrollViewDelegate, MomentViewWithRoomDelegte>
 {
     UIScrollView *scroller;
     NSMutableArray *momentViews;
@@ -35,7 +36,8 @@
         for (int i=0; i<4; i++) {
             CGRect aFrame = self.bounds;
             aFrame = CGRectOffset(aFrame, i*self.bounds.size.width, 0);
-            MomentView *viewer = [[MomentView alloc] initWithFrame:aFrame];
+            MomentViewWithRoom *viewer = [[MomentViewWithRoom alloc] initWithFrame:aFrame];
+            viewer.delegate = self;
             [momentViews addObject:viewer];
             [scroller addSubview:viewer];
         }
@@ -50,7 +52,7 @@
         MomentsCloud *theCloud = [MomentsCloud sharedCloud];
         [RACObserve(theCloud, mostRecentMoments) subscribeNext:^(NSArray *recentMoments) {
             for (int i=0; i<recentMoments.count; i++) {
-                MomentView *aViewer = momentViews[i];
+                MomentViewWithRoom *aViewer = momentViews[i];
                 aViewer.moment = recentMoments[i];
             }
             pager.numberOfPages = recentMoments.count;
@@ -58,6 +60,11 @@
         }];
     }
     return self;
+}
+
+- (void)openRoom:(MomentRoom *)theRoom
+{
+    [self.delegate openRoom:theRoom];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
