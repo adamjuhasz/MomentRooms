@@ -7,6 +7,7 @@
 //
 
 #import "RoomPlate.h"
+#import "CreateNewMomentRoom.h"
 
 @interface CreateARoomPlate : RoomPlate
 

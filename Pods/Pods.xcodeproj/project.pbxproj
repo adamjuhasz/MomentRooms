@@ -161,6 +161,7 @@
 		2E0CC7E945BA6C5FDE30E9A1 /* RACReturnSignal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9810367804DA09486B5AA99F /* RACReturnSignal.h */; };
 		2E59356480F322C9990EA5E8 /* GPUImageXYDerivativeFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AEE1D94484EC697B89B686B /* GPUImageXYDerivativeFilter.h */; };
 		2E731F05DAFA6AFC38DAAB38 /* UIImagePickerController+RACSignalSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = A420C568D1B5B38EC9514C42 /* UIImagePickerController+RACSignalSupport.h */; };
+		2EECEAD01B28E48C00E88965 /* MomentUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEACF1B28E48C00E88965 /* MomentUser.m */; };
 		2FD7B497E2B254D41EC24F05 /* GPUImage3x3ConvolutionFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2FB1D0DE6FF2ADA9A88A8C5E /* GPUImage3x3ConvolutionFilter.h */; };
 		2FF8E3D3BEE1925B16394A1F /* RACDynamicSignal.h in Headers */ = {isa = PBXBuildFile; fileRef = 22F36F53839AC241401F4472 /* RACDynamicSignal.h */; };
 		305C9B1A6B8C149C5D8E66BF /* GPUImageSwirlFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = ED35F37E9FC266FE01DA6539 /* GPUImageSwirlFilter.h */; };
@@ -1147,6 +1148,8 @@
 		2E88B61F0266C2C37855C4DD /* 4.jpg */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = image.jpeg; path = 4.jpg; sourceTree = "<group>"; };
 		2E9B914C7A7FBF568A8BAF50 /* Pods-ColorUtils-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-ColorUtils-dummy.m"; sourceTree = "<group>"; };
 		2ED5BEC769EE006AC96FB9BB /* ColorUtils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ColorUtils.h; path = ColorUtils/ColorUtils.h; sourceTree = "<group>"; };
+		2EECEACE1B28E48C00E88965 /* MomentUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MomentUser.h; sourceTree = "<group>"; };
+		2EECEACF1B28E48C00E88965 /* MomentUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MomentUser.m; sourceTree = "<group>"; };
 		2F6F39DCCB60AAF1DDB6E0DE /* GPUImageChromaKeyBlendFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GPUImageChromaKeyBlendFilter.m; path = framework/Source/GPUImageChromaKeyBlendFilter.m; sourceTree = "<group>"; };
 		2F9278E4CA45AE9D8052043F /* NSDictionary+RACSequenceAdditions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSDictionary+RACSequenceAdditions.m"; path = "ReactiveCocoa/NSDictionary+RACSequenceAdditions.m"; sourceTree = "<group>"; };
 		2FB1D0DE6FF2ADA9A88A8C5E /* GPUImage3x3ConvolutionFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GPUImage3x3ConvolutionFilter.h; path = framework/Source/GPUImage3x3ConvolutionFilter.h; sourceTree = "<group>"; };
@@ -3404,6 +3407,8 @@
 				96915ADCBEFB34AA581569C6 /* MomentFilter.m */,
 				F01B7202B14A22744C0B9977 /* MomentRoom.h */,
 				2C4E78F712C2F755D0DDBF1C /* MomentRoom.m */,
+				2EECEACE1B28E48C00E88965 /* MomentUser.h */,
+				2EECEACF1B28E48C00E88965 /* MomentUser.m */,
 				50EAC27036E0405B98B6D676 /* MomentView.h */,
 				9651E15F45B50115ED37B134 /* MomentView.m */,
 				67F9C6CF5259701D36A370F7 /* SecureMTLModel.h */,
@@ -4795,6 +4800,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2EECEAD01B28E48C00E88965 /* MomentUser.m in Sources */,
 				138FC2D24C51AC0A71438923 /* Pods-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

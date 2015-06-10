@@ -65,6 +65,9 @@
 		2E4E020B1B2164C30077C970 /* BitmapScaleManipulator.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01FF1B2164C30077C970 /* BitmapScaleManipulator.m */; };
 		2EA6DC021B228243001345D9 /* RecentMomentsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EA6DC011B228243001345D9 /* RecentMomentsView.m */; };
 		2EECEAC61B28CFD300E88965 /* MomentViewWithRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEAC51B28CFD300E88965 /* MomentViewWithRoom.m */; };
+		2EECEACA1B28DE6000E88965 /* CreateNewMomentRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEAC91B28DE6000E88965 /* CreateNewMomentRoom.m */; };
+		2EECEACD1B28DF3300E88965 /* LocalRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEACC1B28DF3300E88965 /* LocalRoom.m */; };
+		2EECEAD31B28ECF700E88965 /* LocalRoomPlate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEAD21B28ECF700E88965 /* LocalRoomPlate.m */; };
 		C2C076E4ACC47B5C3A3BBD64 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D7E2521DC314819A0A79ABC /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -171,6 +174,12 @@
 		2EA6DC011B228243001345D9 /* RecentMomentsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentMomentsView.m; sourceTree = "<group>"; };
 		2EECEAC41B28CFD300E88965 /* MomentViewWithRoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MomentViewWithRoom.h; sourceTree = "<group>"; };
 		2EECEAC51B28CFD300E88965 /* MomentViewWithRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MomentViewWithRoom.m; sourceTree = "<group>"; };
+		2EECEAC81B28DE6000E88965 /* CreateNewMomentRoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateNewMomentRoom.h; sourceTree = "<group>"; };
+		2EECEAC91B28DE6000E88965 /* CreateNewMomentRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateNewMomentRoom.m; sourceTree = "<group>"; };
+		2EECEACB1B28DF3300E88965 /* LocalRoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalRoom.h; sourceTree = "<group>"; };
+		2EECEACC1B28DF3300E88965 /* LocalRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalRoom.m; sourceTree = "<group>"; };
+		2EECEAD11B28ECF700E88965 /* LocalRoomPlate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalRoomPlate.h; sourceTree = "<group>"; };
+		2EECEAD21B28ECF700E88965 /* LocalRoomPlate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalRoomPlate.m; sourceTree = "<group>"; };
 		4D7E2521DC314819A0A79ABC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		683B31765AC65F512FD42DB1 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C350757DE1E5832DF845A447 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -399,6 +408,12 @@
 				2E4E01DB1B1FE3DD0077C970 /* RoomPlate.m */,
 				2E4E01DD1B20FFBC0077C970 /* CreateARoomPlate.h */,
 				2E4E01DE1B20FFBC0077C970 /* CreateARoomPlate.m */,
+				2EECEAC81B28DE6000E88965 /* CreateNewMomentRoom.h */,
+				2EECEAC91B28DE6000E88965 /* CreateNewMomentRoom.m */,
+				2EECEAD11B28ECF700E88965 /* LocalRoomPlate.h */,
+				2EECEAD21B28ECF700E88965 /* LocalRoomPlate.m */,
+				2EECEACB1B28DF3300E88965 /* LocalRoom.h */,
+				2EECEACC1B28DF3300E88965 /* LocalRoom.m */,
 			);
 			name = "Room Plates";
 			sourceTree = "<group>";
@@ -645,12 +660,15 @@
 				2E4E02081B2164C30077C970 /* BitmapCropManipulator.m in Sources */,
 				2E4E01D61B1F80460077C970 /* UIViewController+UIViewController_PushPop.m in Sources */,
 				2E1C593C1B165E4600A42D88 /* FXPhotoEditView.m in Sources */,
+				2EECEACD1B28DF3300E88965 /* LocalRoom.m in Sources */,
 				2E4E02031B2164C30077C970 /* OSCommonImage.m in Sources */,
+				2EECEAD31B28ECF700E88965 /* LocalRoomPlate.m in Sources */,
 				2E4E02011B2164C30077C970 /* BitmapContextRep.m in Sources */,
 				2E4E01D31B1F7F970077C970 /* LoginViewController.m in Sources */,
 				2EA6DC021B228243001345D9 /* RecentMomentsView.m in Sources */,
 				2E4E02001B2164C30077C970 /* ANImageBitmapRep.m in Sources */,
 				2E4E02091B2164C30077C970 /* BitmapDrawManipulator.m in Sources */,
+				2EECEACA1B28DE6000E88965 /* CreateNewMomentRoom.m in Sources */,
 				2E4E01BF1B1E65C10077C970 /* MomentTableViewCell.m in Sources */,
 				2E1C592B1B15062500A42D88 /* PhotoSelectionViewController.m in Sources */,
 				2E4E02021B2164C30077C970 /* NSImage+ANImageBitmapRep.m in Sources */,

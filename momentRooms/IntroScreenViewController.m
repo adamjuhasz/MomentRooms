@@ -20,6 +20,7 @@
 #import "UIImage+ANImageBitmapRep.h"
 #import "RecentMomentsView.h"
 #import "FilterSelectionViewController.h"
+#import "LocalRoomPlate.h"
 
 @interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate, RecentMomentsDelegate>
 {
@@ -31,8 +32,9 @@
     int height;
     
     RoomPlate *selectedRoom;
-    NSArray *cachedRooms;
+    NSMutableArray *cachedRooms;
     NSMutableArray *cachedRoomPlates;
+    CGFloat inset;
 }
 @end
 
@@ -66,6 +68,7 @@
     [addButton addTarget:self action:@selector(newMoment) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:addButton];
     
+    inset = 1;
     
     [[RACObserve(singleCloud, subscribedRooms) filter:^BOOL(NSArray *rooms) {
         if (rooms != nil && rooms.count > 0 && selectedRoom == nil) {
@@ -73,8 +76,8 @@
         } else {
             return NO;
         }
-    }] subscribeNext:^(NSArray *rooms) {
-        cachedRooms = [rooms copy];
+    }] subscribeNext:^(NSArray *currentSubscribedRooms) {
+        cachedRooms = [currentSubscribedRooms mutableCopy];
         [verticalPanning removeAllObjects];
         for (UIView *aView in cachedRoomPlates) {
             [aView removeFromSuperview];
@@ -82,24 +85,36 @@
         [cachedRoomPlates removeAllObjects];
         
         int i=0;
-        CreateARoomPlate *createARoom = [[CreateARoomPlate alloc] initWithFrame:CGRectMake((height*9/16+1)*i, 0, height*9/16, height)];
-        MomentRoom *createARoomTemplate = [[MomentRoom alloc] init];
-        createARoomTemplate.backgroundColor = [UIColor grayColor];
-        [self setupPlate:createARoom withRoom:createARoomTemplate intoPosition:0];
+        int constantRooms=0;
+        
+        CreateARoomPlate *createARoom = [[CreateARoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
+        CreateNewMomentRoom *createNewMomentRoom = [[CreateNewMomentRoom alloc] init];
+        [cachedRooms insertObject:createARoom atIndex:i];
+        [self setupPlate:createARoom withRoom:createNewMomentRoom intoPosition:i];
+        constantRooms++;
+        i++;
+        
  
-        for (i=1; i<rooms.count+1; i++) {
-            MomentRoom *theRoomModel = rooms[i-1];
-            RoomPlate *aRoom = [[RoomPlate alloc] initWithFrame:CGRectMake((height*9/16+1)*i, 0, height*9/16, height)];
+        LocalRoomPlate *localPlate = [[LocalRoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
+        LocalRoom *localRoom = [[LocalRoom alloc] init];
+        [cachedRooms insertObject:localRoom atIndex:i];
+        [self setupPlate:localPlate withRoom:localRoom intoPosition:i];
+        constantRooms++;
+        i++;
+        
+        for (; i<cachedRooms.count; i++) {
+            MomentRoom *theRoomModel = cachedRooms[i];
+            RoomPlate *aRoom = [[RoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
             [self setupPlate:aRoom withRoom:theRoomModel intoPosition:i];
         }
-        scroller.contentSize = CGSizeMake(height*9/16*i, height);
+        scroller.contentSize = CGSizeMake((height*9/16)*i + (i+1)*inset, height);
     }];
 
 }
 
 - (void)setupPlate:(RoomPlate*)plate withRoom:(MomentRoom*)room intoPosition:(NSInteger)i
 {
-    plate.frame = CGRectMake((height*9/16+1)*i, 0, height*9/16, height);
+    plate.frame = CGRectMake((height*9/16+1)*i+inset, 0, height*9/16, height);
     plate.room = room;
     plate.delegate = self;
     [scroller addSubview:plate];
@@ -263,15 +278,13 @@
     NSInteger location = [cachedRooms indexOfObject:selectedRoom.room];
     if (location == NSNotFound) {
         location = 0;
-    } else {
-        location++;
     }
     CGRect currentFrameInScroller = [scroller convertRect:selectedRoom.frame fromView:self.view];
     [selectedRoom removeFromSuperview];
     
     [selectedRoom hideMoments];
 
-    CGRect scrollerFrame = CGRectMake((height*9/16+1)*location, 0, height*9/16, height);
+    CGRect scrollerFrame = CGRectMake((height*9/16+inset)*location + inset, 0, height*9/16, height);
     selectedRoom.bounds = CGRectMake(0, 0, currentFrameInScroller.size.width, currentFrameInScroller.size.height);
     selectedRoom.center = CGPointMake(CGRectGetMidX(currentFrameInScroller), CGRectGetMidY(currentFrameInScroller));
     //selectedRoom.bounds = CGRectMake(0, 0, scrollerFrame.size.width, scrollerFrame.size.height);
