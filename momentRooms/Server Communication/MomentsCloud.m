@@ -55,7 +55,7 @@
         if ([PFUser currentUser]) {
             self.loggedIn = YES;
         }
-        //[NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(getMomentsForSubscribedRooms) userInfo:nil repeats:YES];
+        [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(getMomentsForSubscribedRooms) userInfo:nil repeats:YES];
     }
     return self;
 }
