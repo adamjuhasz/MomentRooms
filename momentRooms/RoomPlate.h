@@ -29,6 +29,8 @@
     MomentsViewer *momentDisplayer;
     TGPDiscreteSlider *lifetimeSlider;
     TGPCamelLabels *labels;
+    UICollectionView *membersOfRoom;
+    NSArray *memberList;
 }
 
 @property UIColor *contrastColor;

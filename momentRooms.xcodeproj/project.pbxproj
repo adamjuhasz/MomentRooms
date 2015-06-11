@@ -68,6 +68,7 @@
 		2EECEACA1B28DE6000E88965 /* CreateNewMomentRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEAC91B28DE6000E88965 /* CreateNewMomentRoom.m */; };
 		2EECEACD1B28DF3300E88965 /* LocalRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEACC1B28DF3300E88965 /* LocalRoom.m */; };
 		2EECEAD31B28ECF700E88965 /* LocalRoomPlate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEAD21B28ECF700E88965 /* LocalRoomPlate.m */; };
+		2EECEAD61B28FBAD00E88965 /* UserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2EECEAD51B28FBAD00E88965 /* UserCell.m */; };
 		C2C076E4ACC47B5C3A3BBD64 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D7E2521DC314819A0A79ABC /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -180,6 +181,8 @@
 		2EECEACC1B28DF3300E88965 /* LocalRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalRoom.m; sourceTree = "<group>"; };
 		2EECEAD11B28ECF700E88965 /* LocalRoomPlate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalRoomPlate.h; sourceTree = "<group>"; };
 		2EECEAD21B28ECF700E88965 /* LocalRoomPlate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalRoomPlate.m; sourceTree = "<group>"; };
+		2EECEAD41B28FBAD00E88965 /* UserCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserCell.h; sourceTree = "<group>"; };
+		2EECEAD51B28FBAD00E88965 /* UserCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserCell.m; sourceTree = "<group>"; };
 		4D7E2521DC314819A0A79ABC /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		683B31765AC65F512FD42DB1 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		C350757DE1E5832DF845A447 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
@@ -406,6 +409,8 @@
 				2E4E01C41B1E7EEF0077C970 /* Moment Collectio */,
 				2E4E01DA1B1FE3DD0077C970 /* RoomPlate.h */,
 				2E4E01DB1B1FE3DD0077C970 /* RoomPlate.m */,
+				2EECEAD41B28FBAD00E88965 /* UserCell.h */,
+				2EECEAD51B28FBAD00E88965 /* UserCell.m */,
 				2E4E01DD1B20FFBC0077C970 /* CreateARoomPlate.h */,
 				2E4E01DE1B20FFBC0077C970 /* CreateARoomPlate.m */,
 				2EECEAC81B28DE6000E88965 /* CreateNewMomentRoom.h */,
@@ -672,6 +677,7 @@
 				2E4E01BF1B1E65C10077C970 /* MomentTableViewCell.m in Sources */,
 				2E1C592B1B15062500A42D88 /* PhotoSelectionViewController.m in Sources */,
 				2E4E02021B2164C30077C970 /* NSImage+ANImageBitmapRep.m in Sources */,
+				2EECEAD61B28FBAD00E88965 /* UserCell.m in Sources */,
 				2E1C59221B0D584200A42D88 /* MomentsCloud.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

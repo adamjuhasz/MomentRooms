@@ -258,20 +258,22 @@
         newMoment.image = image;
     } else {
         PFFile *file = post[@"image"];
-        [file getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error){
-                                //CocoaSecurityResult * sha = [CocoaSecurity sha384:@"Moments"];
-                                //NSData *aesKey = [sha.data subdataWithRange:NSMakeRange(0, 32)];
-                                //NSData *aesIv = [sha.data subdataWithRange:NSMakeRange(32, 16)];
-                                //NSData *encryptedData = [[CocoaSecurity aesDecryptWithData:imageData key:aesKey iv:aesIv] data];
-            
-                                NSError *writeError;
-                                [imageData writeToFile:[self pathForMomentsImage:newMoment] options:NSDataWritingAtomic error:&writeError];
-                                UIImage *image = [UIImage imageWithData:imageData];
-                                newMoment.image = image;
-                             }
-                             progressBlock:^(int percentDone){
-                                 newMoment.downloadPercent = (float)percentDone/100.0;
-                             }];
+        if (file) {
+            [file getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error){
+                                    //CocoaSecurityResult * sha = [CocoaSecurity sha384:@"Moments"];
+                                    //NSData *aesKey = [sha.data subdataWithRange:NSMakeRange(0, 32)];
+                                    //NSData *aesIv = [sha.data subdataWithRange:NSMakeRange(32, 16)];
+                                    //NSData *encryptedData = [[CocoaSecurity aesDecryptWithData:imageData key:aesKey iv:aesIv] data];
+                
+                                    NSError *writeError;
+                                    [imageData writeToFile:[self pathForMomentsImage:newMoment] options:NSDataWritingAtomic error:&writeError];
+                                    UIImage *image = [UIImage imageWithData:imageData];
+                                    newMoment.image = image;
+                                 }
+                                 progressBlock:^(int percentDone){
+                                     newMoment.downloadPercent = (float)percentDone/100.0;
+                                 }];
+        }
     }
     
     int i=0;
@@ -486,6 +488,11 @@
     newRoom.backgroundImage = room[@"backgroundImage"];
     newRoom.roomLifetime = [room[@"expirationTime"] floatValue];
     newRoom.backgroundColor = [UIColor colorWithString:room[@"backgroundColor"]];
+    
+    [self getUsersForRoom:newRoom withCompletionBlock:^(NSArray *membersOfRoom) {
+        newRoom.members = membersOfRoom;
+    }];
+    
     return newRoom;
 }
 
@@ -499,6 +506,11 @@
     PFQuery *roleQuery = [PFRole query];
     [roleQuery whereKey:@"users" equalTo:[PFUser currentUser]];
     [roleQuery findObjectsInBackgroundWithBlock:^(NSArray *roles, NSError *error){
+        if (error) {
+            NSLog(@"Error getting roles with %@", error);
+            return;
+        }
+        [PFObject pinAll:roles];
         NSMutableArray *rooms = [NSMutableArray array];
         for (PFRole *role in roles) {
             [rooms addObject:role.name];
@@ -603,6 +615,56 @@
                 }
             }];
         }
+    }];
+}
+
+#pragma mark Get Users
+- (MomentUser*)convertPFUserToMomentUser:(PFUser*)user
+{
+    MomentUser *newUser = [[MomentUser alloc] init];
+    newUser.name = user[@"username"];
+    PFFile *file = user[@"image"];
+    if (file) {
+        [file getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error){
+                                 newUser.image = [UIImage imageWithData:imageData];
+                             }
+                             progressBlock:^(int percentDone){
+                                 
+                             }];
+    }
+    return newUser;
+
+}
+
+- (void)getUsersForRoom:(MomentRoom*)momentRoom withCompletionBlock:(void (^)(NSArray*))completionBlock
+{
+    PFQuery *roleQuery = [PFRole query];
+    [roleQuery whereKey:@"name" equalTo:momentRoom.roomid];
+    [roleQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object,  NSError  *error) {
+        if (error) {
+            NSLog(@"Error getting room role; %@", error);
+            return;
+        }
+        [PFObject pinAllInBackground:@[object]];
+        PFRole *roomsRole = (PFRole*)object;
+        PFRelation *users = roomsRole.users;
+        PFQuery *userQuery = users.query;
+        [userQuery findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error){
+            if (error) {
+                NSLog(@"Error getting users from Relation; %@", error);
+                return;
+            }
+            NSMutableArray *usersInRoom = [NSMutableArray array];
+            [PFObject pinAllInBackground:users];
+            for (PFUser *aUser in users) {
+                MomentUser *aMomentUser = [self convertPFUserToMomentUser:aUser];
+                [usersInRoom addObject:aMomentUser];
+            }
+            if (completionBlock) {
+                completionBlock(usersInRoom);
+            }
+        }];
+        
     }];
 }
 

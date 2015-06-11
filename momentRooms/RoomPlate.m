@@ -12,8 +12,9 @@
 #import <MessageUI/MessageUI.h>
 #import <TGPControls/TGPCamelLabels.h>
 #import <TGPControls/TGPDiscreteSlider.h>
+#import "UserCell.h"
 
-@interface RoomPlate () <UITableViewDelegate>
+@interface RoomPlate () <UITableViewDelegate, UICollectionViewDataSource>
 
 @end
 
@@ -74,15 +75,32 @@
         
         lifetimeSlider.ticksListener = labels;
         
+        UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+        flowLayout.minimumLineSpacing = 1;
+        flowLayout.minimumInteritemSpacing = 1;
+        flowLayout.itemSize = CGSizeMake(40, 40);
+        membersOfRoom = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, flowLayout.itemSize.width*3+2, 100) collectionViewLayout:flowLayout];
+        membersOfRoom.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
+        [membersOfRoom registerClass:[UserCell class] forCellWithReuseIdentifier:@"user"];
+        membersOfRoom.dataSource = self;
+        [self addSubview:membersOfRoom];
+        
         @weakify(self);
         [RACObserve(self, room) subscribeNext:^(MomentRoom *newRoom) {
             @strongify(self);
             [RACObserve(newRoom, roomName) subscribeNext:^(NSString *roomName) {
                 text.text = roomName;
             }];
+            
+            [RACObserve(newRoom, members) subscribeNext:^(NSArray *theMembersOfTheRoom) {
+                memberList = theMembersOfTheRoom;
+                [membersOfRoom reloadData];
+            }];
+            
             [RACObserve(newRoom, backgroundColor) subscribeNext:^(UIColor *roomBackgroundColor) {
                 self.contrastColor = [roomBackgroundColor sqf_contrastingColorWithMethod:SQFContrastingColorYIQMethod];
                 self.backgroundColor = roomBackgroundColor;
+                membersOfRoom.backgroundColor = roomBackgroundColor;
                 text.textColor = self.contrastColor;
                 text.tintColor = self.contrastColor;
                 minimizeButton.tintColor = self.contrastColor;
@@ -147,6 +165,8 @@
         text.bounds = CGRectMake(0, 0, bounds.size.width, text.bounds.size.height);
         self.layer.cornerRadius = 3.0;
     }
+    
+    membersOfRoom.center = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
     
     text.center = CGPointMake(bounds.size.width/2.0, 20+text.bounds.size.height/2.0);
     
@@ -223,12 +243,32 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
+    if (scrollView == membersOfRoom) {
+        return;
+    }
     NSLog(@"now at %@", NSStringFromCGPoint(scrollView.contentOffset));
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
+    if (scrollView == membersOfRoom) {
+        return;
+    }
     NSLog(@"velocity: %@ at %@", NSStringFromCGPoint(velocity), NSStringFromCGPoint(scrollView.contentOffset));
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return memberList.count;
+}
+
+- (UICollectionViewCell*)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    UserCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"user" forIndexPath:indexPath];
+    
+    cell.user = memberList[[indexPath indexAtPosition:1]];
+    
+    return cell;
 }
 
 @end
