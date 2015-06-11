@@ -16,6 +16,10 @@
 #import <UIKit/UIKit.h>
 #endif
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < 70000
+#error "Digits doesn't support iOS 6.x and lower. Please, change your minimum deployment target to iOS 7.0"
+#endif
+
 #import <TwitterCore/TwitterCore.h>
 
 #import "DGTOAuthSigning.h"

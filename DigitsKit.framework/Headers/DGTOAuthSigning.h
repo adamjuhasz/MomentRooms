@@ -34,4 +34,16 @@
  */
 - (instancetype)init __attribute__((unavailable("Use -initWithAuthConfig:authSession: instead.")));
 
+/**
+ *  This method provides you with the OAuth signature, as well as the formed URL with the query string, to send a request to `/sdk/account`.
+ *
+ *  @param params           (optional) Extra custom params to be added to the Request URL. These parameters will be part of the signature and validated by Digit's API. These extra parameters help as a Nonce between the client's session and the Echo header to validate that this header cannot be reused by another client's session.
+ *
+ *  @return A dictionary with the fully formed Request URL under `TWTROAuthEchoRequestURLStringKey` (`NSString`), and the `Authorization` header in `TWTROAuthEchoAuthorizationHeaderKey` (`NSString`), to be used to sign the request.
+ *
+ *  @see More information about OAuth Echo: https://dev.twitter.com/oauth/echo
+ *  @see More information about Verify Credentials: https://dev.twitter.com/twitter-kit/ios/oauth-echo
+ */
+- (NSDictionary *)OAuthEchoHeadersToVerifyCredentialsWithParams:(NSDictionary *)params;
+
 @end

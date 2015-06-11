@@ -40,6 +40,9 @@
 /* Signed in button title */
 "BUTTON_SIGNED_IN" = "Signed in";
 
+/* Wait for confirmation code before retry */
+"WAIT_FOR_CONF_CODE" = "You will receive your confirmation code via text message within one minute.";
+
 /* Button title for resending the confirmation code */
 "BUTTON_RESEND_CONF_CODE" = "Resend confirmation code";
 

@@ -85,6 +85,17 @@
 - (void)authenticateWithDigitsAppearance:(DGTAppearance *)appearance viewController:(UIViewController *)viewController title:(NSString *)title completion:(DGTAuthenticationCompletion)completion;
 
 /**
+ *  Starts the authentication flow UI using a predetermined phone number.
+ *
+ *  @param phoneNumber       Prepopulate the phone number field with this value. Value should be a string containing only numbers, and prefixed with an optional '+' character if the number includes a country dial code. If a '+' is provided, the country dial code will be parsed out and selected from the country picker. Examples: +15555555555, 5555555555, +345555555555
+ *  @param appearance        Appearance of the authentication flow views. Pass `nil` to use the default appearance.
+ *  @param viewController    View controller used to present the modal authentication controller. Pass `nil` to use default top-most view controller.
+ *  @param title             Title for the modal screens. Pass `nil` to use default app name.
+ *  @param completion        Block called after the authentication flow has ended.
+ */
+- (void)authenticateWithPhoneNumber:(NSString *)phoneNumber digitsAppearance:(DGTAppearance *)appearance viewController:(UIViewController *)viewController title:(NSString *)title completion:(DGTAuthenticationCompletion)completion;
+
+/**
  *  Deletes the local Twitter user session from this app. This will not remove the system Twitter account nor make a network request to invalidate the session. Subsequent calls to `authenticateWith` methods will start a new Digits authentication flow.
  */
 - (void)logOut;
