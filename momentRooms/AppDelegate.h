@@ -7,11 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "IntroScreenViewController.h"
+#import "UIViewController+UIViewController_PushPop.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-
+@property (strong) IntroScreenViewController *mainViewController;
 
 @end
 

@@ -31,6 +31,7 @@
     TGPCamelLabels *labels;
     UICollectionView *membersOfRoom;
     NSArray *memberList;
+    UIImageView *backgroundView;
 }
 
 @property UIColor *contrastColor;

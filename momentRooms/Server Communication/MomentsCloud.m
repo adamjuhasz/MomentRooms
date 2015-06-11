@@ -315,7 +315,7 @@
     [momentsQuery whereKey:@"expiresAt" greaterThan:[NSDate date]];
     [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *moments, NSError *error){
         if (!error) {
-            [PFObject pinAll:moments];
+            [PFObject pinAllInBackground:moments];
             NSArray *momentsArray = [self processMomentsFromParse:moments];
             if (completionBlock) {
                 completionBlock(momentsArray);
@@ -394,7 +394,7 @@
     [momentsQuery whereKey:@"expiresAt" greaterThan:[NSDate date]];
     [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *moments, NSError *error){
         if (!error) {
-            [PFObject pinAll:moments];
+            [PFObject pinAllInBackground:moments];
             NSArray *momentsArray = [self processMomentsFromParse:moments];
             if (completionBlock) {
                 completionBlock(momentsArray);
@@ -471,7 +471,7 @@
     newRoom.objectId = room.roomid;
     newRoom[@"name"] = room.roomName;
     if (room.backgroundImage) {
-        NSData *imageData = UIImageJPEGRepresentation(room.backgroundImage, 1.0);
+        NSData *imageData = UIImageJPEGRepresentation(room.backgroundImage, 0.8);
         PFFile *backgroundImageParseFile = [PFFile fileWithName:@"background.jpg" data:imageData];
         newRoom[@"backgroundImage"] = backgroundImageParseFile;
     }
@@ -485,7 +485,16 @@
     MomentRoom *newRoom = [[MomentRoom alloc] init];
     newRoom.roomid = room.objectId;
     newRoom.roomName = room[@"name"];
-    newRoom.backgroundImage = room[@"backgroundImage"];
+    PFFile *file = room[@"backgroundImage"];
+    if (file) {
+        [file getDataInBackgroundWithBlock:^(NSData *imageData, NSError *error){
+            newRoom.backgroundImage = [UIImage imageWithData:imageData];
+        }
+                             progressBlock:^(int percentDone){
+                                 
+                             }];
+
+    }
     newRoom.roomLifetime = [room[@"expirationTime"] floatValue];
     newRoom.backgroundColor = [UIColor colorWithString:room[@"backgroundColor"]];
     
@@ -510,7 +519,7 @@
             NSLog(@"Error getting roles with %@", error);
             return;
         }
-        [PFObject pinAll:roles];
+        [PFObject pinAllInBackground:roles];
         NSMutableArray *rooms = [NSMutableArray array];
         for (PFRole *role in roles) {
             [rooms addObject:role.name];
@@ -519,12 +528,12 @@
         [roomQuery whereKey:@"objectId" containedIn:rooms];
         [roomQuery findObjectsInBackgroundWithBlock:^(NSArray *rooms, NSError *error){
             if (!error) {
-                [PFObject unpinAllObjectsWithName:@"subscribedRooms"];
+                NSString *nameOfObjectPin = @"subscribedRooms";
+                [PFObject unpinAllObjectsInBackgroundWithName:nameOfObjectPin];
                 for (PFObject *room in rooms) {
                     NSLog(@"%@ called %@", room.objectId, room[@"name"]);
                 }
-                NSError *pinError;
-                [PFObject pinAll:rooms withName:@"subscribedRooms" error:&pinError ];
+                [PFObject pinAllInBackground:rooms withName:nameOfObjectPin block:nil];
                 [self loadCachedsubscribedRooms];
                 
                 if (completionBlock) {

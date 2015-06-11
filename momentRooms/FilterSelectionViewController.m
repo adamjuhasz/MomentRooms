@@ -7,7 +7,6 @@
 //
 
 #import "FilterSelectionViewController.h"
-#import "FXPhotoEditView.h"
 #import <moment/momentview.h>
 #import <moment/EditableMomentView.h>
 #import <VBFPopFlatButton/VBFPopFlatButton.h>

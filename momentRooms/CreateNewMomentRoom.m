@@ -15,6 +15,7 @@
     self = [super init];
     if (self) {
         self.backgroundColor = [UIColor grayColor];
+        self.allowsPosting = NO;
     }
     return self;
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>6C956211-E6DF-4E31-A172-99E750A76221</string>
+	<key>IDESourceControlProjectName</key>
+	<string>momentRooms</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>5CA2F47A2ED8BA35E1F85697E09B2822F1CF9F71</key>
+		<string>https://github.com/adamjuhasz/Moment.git</string>
+		<key>8312B29ABA30347EAE01B591DD21130321766F48</key>
+		<string>https://github.com/adamjuhasz/MomentRooms.git</string>
+		<key>CDDF40F39EAAD9EC0F4732E86123B12CCCFF14B1</key>
+		<string>https://github.com/adamjuhasz/PhotoManager.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>momentRooms.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>5CA2F47A2ED8BA35E1F85697E09B2822F1CF9F71</key>
+		<string>../../Moment</string>
+		<key>8312B29ABA30347EAE01B591DD21130321766F48</key>
+		<string>..</string>
+		<key>CDDF40F39EAAD9EC0F4732E86123B12CCCFF14B1</key>
+		<string>../../PhotoManager</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/adamjuhasz/MomentRooms.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>8312B29ABA30347EAE01B591DD21130321766F48</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>5CA2F47A2ED8BA35E1F85697E09B2822F1CF9F71</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Moment</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8312B29ABA30347EAE01B591DD21130321766F48</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MomentRooms</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>CDDF40F39EAAD9EC0F4732E86123B12CCCFF14B1</string>
+			<key>IDESourceControlWCCName</key>
+			<string>PhotoManager</string>
+		</dict>
+	</array>
+</dict>
+</plist>

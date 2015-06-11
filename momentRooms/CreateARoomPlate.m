@@ -10,12 +10,17 @@
 #import "MomentsCloud.h"
 #import "ANImageBitmapRep/ANImageBitmapRep.h"
 #import "VBFPopFlatButton+BigHit.h"
+#import "PhotoSelectionViewController.h"
+#import "AppDelegate.h"
+#import <ReactiveCocoa/ReactiveCocoa.h>
+#import <NYXImagesKit/NYXImagesKit.h>
 
-@interface CreateARoomPlate ()
+@interface CreateARoomPlate () <UITextFieldDelegate>
 {
     UIImageView *gradient;
     ANImageBitmapRep *bitmapRep;
     RACSignal *createActiveSignal;
+    UIButton *chooseButton;
 }
 @end
 @implementation CreateARoomPlate
@@ -28,6 +33,8 @@
         text.layer.borderColor = self.contrastColor.CGColor;
         text.layer.borderWidth=0.0;
         text.userInteractionEnabled = YES;
+        text.placeholder = @"New room name";
+        text.delegate = self;
         
         UIImage *gradientImage = [UIImage imageNamed:@"gradient.png"];
         bitmapRep = [[ANImageBitmapRep alloc] initWithImage:gradientImage];
@@ -40,6 +47,12 @@
         UIPanGestureRecognizer *panning = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(isPanning:)];
         [gradient addGestureRecognizer:panning];
         gradient.userInteractionEnabled = YES;
+        
+        chooseButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 300, 100)];
+        chooseButton.center = CGPointMake(self.bounds.size.width/2.0, 150);
+        [chooseButton setTitle:@"Choose background photo" forState:UIControlStateNormal];
+        [chooseButton addTarget:self action:@selector(selectAPhoto) forControlEvents:UIControlEventTouchUpInside];
+        [self addSubview:chooseButton];
         
         __weak CreateARoomPlate *weakSelf = self;
         [RACObserve(weakSelf, contrastColor) subscribeNext:^(UIColor *contrast) {
@@ -67,7 +80,8 @@
             }
         }];
         shareButton.currentButtonType = buttonDefaultType;
-
+        
+        [self hideMoments];
     }
     return self;
 }
@@ -82,6 +96,8 @@
     gradient.bounds = CGRectMake(0, 0, bounds.size.width-80, 44);
     gradient.center = CGPointMake(bounds.size.width/2.0, 150+gradient.bounds.size.height/2.0);
     [bitmapRep setSize:BMPointMake(gradient.bounds.size.width, gradient.bounds.size.height)];
+    
+    chooseButton.center = CGPointMake(self.bounds.size.width/2.0, 300);
 }
 
 - (void)showMoments
@@ -91,10 +107,12 @@
     lifetimeSlider.hidden = NO;
     labels.hidden = NO;
     gradient.hidden = NO;
+    text.hidden = NO;
     
     text.layer.borderWidth=1.0;
     
     [text becomeFirstResponder];
+    chooseButton.hidden = NO;
 }
 
 - (void)hideMoments
@@ -106,6 +124,8 @@
     lifetimeSlider.hidden = YES;
     labels.hidden = YES;
     gradient.hidden = YES;
+    text.hidden = YES;
+    chooseButton.hidden = YES;
 }
 
 - (void)share
@@ -140,7 +160,8 @@
             newRoom.roomLifetime = 2*7*24*60*60;
             break;
     }
-    newRoom.backgroundColor = self.backgroundColor;
+    newRoom.backgroundColor = self.room.backgroundColor;
+    newRoom.backgroundImage = self.room.backgroundImage;
     [[MomentsCloud sharedCloud] createRoom:newRoom];
     [self.delegate minimizeRoom];
 }
@@ -157,6 +178,30 @@
         BMPixel pixel = [bitmapRep getPixelAtPoint:BMPointFromPoint(point)];
         self.room.backgroundColor = UIColorFromBMPixel(pixel);
     }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [text resignFirstResponder];
+    return YES;
+}
+
+- (void)selectAPhoto
+{
+    [text resignFirstResponder];
+    AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+    IntroScreenViewController *mainController = appDelegate.mainViewController;
+    
+    PhotoSelectionViewController *photoSelector = [[PhotoSelectionViewController alloc] init];
+    photoSelector.delegate = mainController;
+    
+    [appDelegate.mainViewController pushController:photoSelector withSuccess:nil];
+    RACDisposable *observer = [[RACObserve(photoSelector, selectedImage) filter:^BOOL(id value) {
+        return (value != nil);
+    }] subscribeNext:^(UIImage *fullsizeImage) {
+        [mainController popAllControllers];
+        self.room.backgroundImage = [fullsizeImage grayscale];
+    }];
 }
 
 @end

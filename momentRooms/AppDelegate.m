@@ -8,20 +8,11 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
-#import "IntroScreenViewController.h"
 #import "MomentsCloud.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 #import <DigitsKit/DigitsKit.h>
 #import "LoginViewController.h"
-#import "UIViewController+UIViewController_PushPop.h"
-
-@interface AppDelegate ()
-{
-    IntroScreenViewController *introScreen;
-}
-
-@end
 
 @implementation AppDelegate
 
@@ -47,14 +38,14 @@
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
     // ...
-    introScreen = [[IntroScreenViewController alloc] init];
+    self.mainViewController = [[IntroScreenViewController alloc] init];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = introScreen;
+    self.window.rootViewController = self.mainViewController;
     [self.window makeKeyAndVisible];
     
     if ([[MomentsCloud sharedCloud] loggedInUserName] == nil) {
         LoginViewController *loginView = [[LoginViewController alloc] init];
-        [introScreen pushController:loginView withDirection:UIRectEdgeBottom withSuccess:nil];
+        [self.mainViewController pushController:loginView withDirection:UIRectEdgeBottom withSuccess:nil];
     } else {
         
     }
@@ -82,6 +73,12 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    
+    return YES;
 }
 
 @end

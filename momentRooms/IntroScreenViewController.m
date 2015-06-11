@@ -268,9 +268,11 @@
     
     [room showMoments];
     
-    addButton.roundBackgroundColor = selectedRoom.room.backgroundColor;
-    addButton.tintColor = selectedRoom.contrastColor;
-    addButton.hidden = NO;
+    if (selectedRoom.room.allowsPosting) {
+        addButton.roundBackgroundColor = selectedRoom.room.backgroundColor;
+        addButton.tintColor = selectedRoom.contrastColor;
+        addButton.hidden = NO;
+    }
 }
 
 - (void)minimizeRoom

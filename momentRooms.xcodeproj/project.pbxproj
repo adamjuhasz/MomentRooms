@@ -31,9 +31,6 @@
 		2E1C592B1B15062500A42D88 /* PhotoSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C592A1B15062500A42D88 /* PhotoSelectionViewController.m */; };
 		2E1C592E1B1507E500A42D88 /* CameraControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C592D1B1507E500A42D88 /* CameraControl.m */; };
 		2E1C59341B165AC100A42D88 /* FilterSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C59331B165AC100A42D88 /* FilterSelectionViewController.m */; };
-		2E1C593A1B165E4600A42D88 /* FXPhotoEditGrid.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E1C59361B165E4600A42D88 /* FXPhotoEditGrid.png */; };
-		2E1C593B1B165E4600A42D88 /* FXPhotoEditGrid@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E1C59371B165E4600A42D88 /* FXPhotoEditGrid@2x.png */; };
-		2E1C593C1B165E4600A42D88 /* FXPhotoEditView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E1C59391B165E4600A42D88 /* FXPhotoEditView.m */; };
 		2E35ECF21B28C40100849766 /* VBFPopFlatButton+BigHit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E35ECF11B28C40100849766 /* VBFPopFlatButton+BigHit.m */; };
 		2E4E01BB1B1E4AFE0077C970 /* IntroScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01BA1B1E4AFE0077C970 /* IntroScreenViewController.m */; };
 		2E4E01BF1B1E65C10077C970 /* MomentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E4E01BD1B1E65C10077C970 /* MomentTableViewCell.m */; };
@@ -117,10 +114,6 @@
 		2E1C592D1B1507E500A42D88 /* CameraControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraControl.m; sourceTree = "<group>"; };
 		2E1C59321B165AC100A42D88 /* FilterSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterSelectionViewController.h; sourceTree = "<group>"; };
 		2E1C59331B165AC100A42D88 /* FilterSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterSelectionViewController.m; sourceTree = "<group>"; };
-		2E1C59361B165E4600A42D88 /* FXPhotoEditGrid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FXPhotoEditGrid.png; sourceTree = "<group>"; };
-		2E1C59371B165E4600A42D88 /* FXPhotoEditGrid@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "FXPhotoEditGrid@2x.png"; sourceTree = "<group>"; };
-		2E1C59381B165E4600A42D88 /* FXPhotoEditView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FXPhotoEditView.h; sourceTree = "<group>"; };
-		2E1C59391B165E4600A42D88 /* FXPhotoEditView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FXPhotoEditView.m; sourceTree = "<group>"; };
 		2E35ECF01B28C40100849766 /* VBFPopFlatButton+BigHit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "VBFPopFlatButton+BigHit.h"; sourceTree = "<group>"; };
 		2E35ECF11B28C40100849766 /* VBFPopFlatButton+BigHit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "VBFPopFlatButton+BigHit.m"; sourceTree = "<group>"; };
 		2E4E01B91B1E4AFE0077C970 /* IntroScreenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntroScreenViewController.h; sourceTree = "<group>"; };
@@ -251,7 +244,6 @@
 			children = (
 				2E4E01E41B2164C30077C970 /* ANImageBitmapRep */,
 				2E4E01E21B2161550077C970 /* gradient.png */,
-				2E1C59351B165E4600A42D88 /* FXPhotoEditView */,
 				2E1C58D81B0D23D100A42D88 /* AppDelegate.h */,
 				2E1C58D91B0D23D100A42D88 /* AppDelegate.m */,
 				2E4E01D11B1F7F970077C970 /* LoginViewController.h */,
@@ -295,17 +287,6 @@
 				2E1C58EF1B0D23D100A42D88 /* Info.plist */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		2E1C59351B165E4600A42D88 /* FXPhotoEditView */ = {
-			isa = PBXGroup;
-			children = (
-				2E1C59361B165E4600A42D88 /* FXPhotoEditGrid.png */,
-				2E1C59371B165E4600A42D88 /* FXPhotoEditGrid@2x.png */,
-				2E1C59381B165E4600A42D88 /* FXPhotoEditView.h */,
-				2E1C59391B165E4600A42D88 /* FXPhotoEditView.m */,
-			);
-			path = FXPhotoEditView;
 			sourceTree = "<group>";
 		};
 		2E4E01C41B1E7EEF0077C970 /* Moment Collectio */ = {
@@ -565,9 +546,7 @@
 				2E1C58E51B0D23D100A42D88 /* LaunchScreen.xib in Resources */,
 				2E4E01CE1B1F6DD70077C970 /* DigitsKitResources.bundle in Resources */,
 				2E4E01E31B2161550077C970 /* gradient.png in Resources */,
-				2E1C593A1B165E4600A42D88 /* FXPhotoEditGrid.png in Resources */,
 				2E1C58E21B0D23D100A42D88 /* Images.xcassets in Resources */,
-				2E1C593B1B165E4600A42D88 /* FXPhotoEditGrid@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -664,7 +643,6 @@
 				2E1C58D71B0D23D100A42D88 /* main.m in Sources */,
 				2E4E02081B2164C30077C970 /* BitmapCropManipulator.m in Sources */,
 				2E4E01D61B1F80460077C970 /* UIViewController+UIViewController_PushPop.m in Sources */,
-				2E1C593C1B165E4600A42D88 /* FXPhotoEditView.m in Sources */,
 				2EECEACD1B28DF3300E88965 /* LocalRoom.m in Sources */,
 				2E4E02031B2164C30077C970 /* OSCommonImage.m in Sources */,
 				2EECEAD31B28ECF700E88965 /* LocalRoomPlate.m in Sources */,

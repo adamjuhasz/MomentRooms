@@ -33,6 +33,7 @@
         text.textAlignment = NSTextAlignmentCenter;
         text.minimumFontSize = 8;
         text.adjustsFontSizeToFitWidth = YES;
+        text.returnKeyType = UIReturnKeyDone;
         [self addSubview:text];
         
         feed = [[UIView alloc] initWithFrame:self.bounds];
@@ -83,11 +84,24 @@
         membersOfRoom.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
         [membersOfRoom registerClass:[UserCell class] forCellWithReuseIdentifier:@"user"];
         membersOfRoom.dataSource = self;
+        membersOfRoom.backgroundColor = [UIColor clearColor];
         [self addSubview:membersOfRoom];
+        
+        backgroundView = [[UIImageView alloc] initWithFrame:self.bounds];
+        backgroundView.alpha = 0.2;
+        backgroundView.contentMode = UIViewContentModeScaleAspectFill;
+        backgroundView.backgroundColor = [UIColor clearColor];
+        [self addSubview:backgroundView];
+        [self sendSubviewToBack:backgroundView];
         
         @weakify(self);
         [RACObserve(self, room) subscribeNext:^(MomentRoom *newRoom) {
             @strongify(self);
+            
+            [RACObserve(newRoom, backgroundImage) subscribeNext:^(UIImage *backgroundImage) {
+                backgroundView.image = backgroundImage;
+            }];
+            
             [RACObserve(newRoom, roomName) subscribeNext:^(NSString *roomName) {
                 text.text = roomName;
             }];
@@ -100,7 +114,6 @@
             [RACObserve(newRoom, backgroundColor) subscribeNext:^(UIColor *roomBackgroundColor) {
                 self.contrastColor = [roomBackgroundColor sqf_contrastingColorWithMethod:SQFContrastingColorYIQMethod];
                 self.backgroundColor = roomBackgroundColor;
-                membersOfRoom.backgroundColor = roomBackgroundColor;
                 text.textColor = self.contrastColor;
                 text.tintColor = self.contrastColor;
                 minimizeButton.tintColor = self.contrastColor;
@@ -179,6 +192,8 @@
     lifetimeSlider.center = CGPointMake(bounds.size.width/2.0, lifetimeSlider.center.y);
     labels.bounds = CGRectMake(0, 0, bounds.size.width-50, 20);
     labels.center = CGPointMake(bounds.size.width/2.0, labels.center.y);
+    
+    backgroundView.frame = bounds;
 }
 
 - (void)showMoments
@@ -213,6 +228,7 @@
     shareButton.hidden = NO;
     lifetimeSlider.hidden = NO;
     labels.hidden = NO;
+    membersOfRoom.hidden = YES;
 }
 
 - (void)hideMoments
@@ -224,6 +240,7 @@
     shareButton.hidden = YES;
     lifetimeSlider.hidden = YES;
     labels.hidden = YES;
+    membersOfRoom.hidden = NO;
 }
 
 - (void)share
