@@ -624,7 +624,7 @@
     return room;
 }
 
-#pragma mark Subscribe to Rooms
+#pragma mark Room subscription
 - (void)subscribeToRoomWithID:(NSString *)roomID withCompletionHandler:(void (^)(MomentRoom*))completionBlock
 {
     if ([PFUser currentUser] == nil) {

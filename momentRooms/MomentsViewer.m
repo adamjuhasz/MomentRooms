@@ -40,6 +40,7 @@
         roomsTable.separatorStyle = UITableViewCellSeparatorStyleNone;
         roomsTable.backgroundColor = [UIColor clearColor];
         [roomsTable setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+        roomsTable.alwaysBounceVertical = YES;
         [self addSubview:roomsTable];
         nib = [UINib nibWithNibName:@"MomentTableViewCell" bundle:nil];
         

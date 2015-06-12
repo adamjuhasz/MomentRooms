@@ -17,6 +17,7 @@
 @required
 - (void)minimizeRoom;
 - (void)maximizeRoom;
+- (CGSize)sizeOfMininimzedRoom;
 
 @end
 
@@ -36,6 +37,7 @@
     UISwitch *notificationSwitch;
     UILabel *notificationLabel;
     UIButton *removeButton;
+    BOOL isMinimized;
 }
 
 @property UIColor *contrastColor;
@@ -48,8 +50,5 @@
 - (void)didMaximizeRoom;
 - (void)willMinimizeRoom;
 - (void)didMinimizeRoom;
-
-- (void)showMoments;
-- (void)hideMoments;
 
 @end

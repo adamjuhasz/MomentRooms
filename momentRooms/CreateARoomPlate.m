@@ -100,7 +100,7 @@
         }];
         shareButton.currentButtonType = buttonDefaultType;
         
-        [self hideMoments];
+        [self willMinimizeRoom];
     }
     return self;
 }
@@ -119,7 +119,7 @@
     chooseButton.center = CGPointMake(self.bounds.size.width/2.0, 300);
 }
 
-- (void)showMoments
+- (void)willMaximizeRoom
 {
     minimizeButton.hidden = NO;
     shareButton.hidden = NO;
@@ -137,7 +137,12 @@
     }
 }
 
-- (void)hideMoments
+- (void)didMaximizeRoom
+{
+    
+}
+
+- (void)willMinimizeRoom
 {
     text.text = @"";
     text.layer.borderWidth=0.0;
@@ -149,6 +154,11 @@
     text.hidden = YES;
     chooseButton.hidden = YES;
     backgroundView.hidden = NO;
+}
+
+- (void)didMinimizeRoom
+{
+    
 }
 
 - (void)share

@@ -86,7 +86,7 @@
         int i=0;
         int constantRooms=0;
         
-        CreateARoomPlate *createARoom = [[CreateARoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
+        CreateARoomPlate *createARoom = [[CreateARoomPlate alloc] initWithFrame:CGRectMake(0, 0, [self sizeOfMininimzedRoom].width, [self sizeOfMininimzedRoom].height)];
         CreateNewMomentRoom *createNewMomentRoom = [[CreateNewMomentRoom alloc] init];
         [cachedRooms insertObject:createARoom atIndex:i];
         [self setupPlate:createARoom withRoom:createNewMomentRoom intoPosition:i];
@@ -112,9 +112,14 @@
 
 }
 
+- (CGSize)sizeOfMininimzedRoom
+{
+    return CGSizeMake(height*9/16, height);
+}
+
 - (void)setupPlate:(RoomPlate*)plate withRoom:(MomentRoom*)room intoPosition:(NSInteger)i
 {
-    plate.frame = CGRectMake((height*9/16+1)*i+inset, 0, height*9/16, height);
+    plate.frame = CGRectMake((height*9/16+1)*i+inset, 0, [self sizeOfMininimzedRoom].width, [self sizeOfMininimzedRoom].height);
     plate.room = room;
     plate.delegate = self;
     [scroller addSubview:plate];
@@ -245,6 +250,8 @@
     room.center = CGPointMake(CGRectGetMidX(frameInController), CGRectGetMidY(frameInController));
     [self.view addSubview:selectedRoom];
     
+    [room willMaximizeRoom];
+    
     POPSpringAnimation *boundAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewBounds];
     boundAnimation.toValue = [NSValue valueWithCGRect:self.view.bounds];
     boundAnimation.springSpeed = 15;
@@ -265,8 +272,7 @@
     }
     [selectedRoom pop_addAnimation:centerAnimation forKey:@"center"];
 
-    
-    [room showMoments];
+    [room didMaximizeRoom];
     
     if (selectedRoom.room.allowsPosting) {
         addButton.roundBackgroundColor = selectedRoom.room.backgroundColor;
@@ -284,7 +290,7 @@
     CGRect currentFrameInScroller = [scroller convertRect:selectedRoom.frame fromView:self.view];
     [selectedRoom removeFromSuperview];
     
-    [selectedRoom hideMoments];
+    [selectedRoom willMinimizeRoom];
 
     CGRect scrollerFrame = CGRectMake((height*9/16+inset)*location + inset, 0, height*9/16, height);
     selectedRoom.bounds = CGRectMake(0, 0, currentFrameInScroller.size.width, currentFrameInScroller.size.height);
@@ -304,6 +310,8 @@
     centerAnimation.toValue = [NSValue valueWithCGPoint:CGPointMake(CGRectGetMidX(scrollerFrame), CGRectGetMidY(scrollerFrame))];
     centerAnimation.springSpeed = 15;
     [selectedRoom pop_addAnimation:centerAnimation forKey:@"center"];
+    
+    [selectedRoom didMinimizeRoom];
     
     for (UIGestureRecognizer *recognizer in selectedRoom.gestureRecognizers) {
         recognizer.enabled = YES;

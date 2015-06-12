@@ -12,5 +12,4 @@
 @interface IntroScreenViewController : UIViewController
 
 - (void)openRoom:(MomentRoom *)theRoom;
-
 @end

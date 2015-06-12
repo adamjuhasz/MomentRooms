@@ -15,7 +15,10 @@
 #import "UserCell.h"
 
 @interface RoomPlate () <UITableViewDelegate, UICollectionViewDataSource, MFMessageComposeViewControllerDelegate>
-
+{
+    CGFloat navigationHeaderHeight;
+    CGFloat locationAtScrollStart;
+}
 @end
 
 @implementation RoomPlate
@@ -24,6 +27,9 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        locationAtScrollStart = 0;
+        navigationHeaderHeight = 64;
+        
         self.clipsToBounds = YES;
         self.layer.cornerRadius = 3.0;
         
@@ -175,7 +181,7 @@
             }];
         }];
         
-        [self hideMoments];
+        [self willMinimizeRoom];
     }
     return self;
 }
@@ -223,32 +229,9 @@
     backgroundView.frame = bounds;
 }
 
-- (void)showMoments
+- (void)willMaximizeRoom
 {
-    momentDisplayer = [[MomentsViewer alloc] init];
-    momentDisplayer.frame = CGRectMake(0, 64, self.bounds.size.width, self.bounds.size.height-64);
-    momentDisplayer.myRoom = self.room;
-    //momentDisplayer.backgroundColor = [UIColor whiteColor];
-    momentDisplayer.tableDelegate = self;
-    
-    RACSignal *hasMomentsToDisplay = [RACObserve(momentDisplayer.myRoom, moments)
-                                map:^id(NSArray *moments) {
-                                    return @(moments.count > 0);
-                                }];
-    
-    RACSignal *createActiveSignal = [RACSignal combineLatest:@[hasMomentsToDisplay]
-                                                      reduce:^id(NSNumber *isValid) {
-                                                          return @([isValid boolValue]);
-                                                      }];
-    
-    [createActiveSignal subscribeNext:^(NSNumber *isValid) {
-        //allow saving
-        if ([isValid boolValue] == YES) {
-            //momentDisplayer.hidden = NO;
-        } else {
-            //momentDisplayer.hidden = YES;
-        }
-    }];
+    isMinimized = NO;
     
     [self addSubview:minimizeButton];
     [self addSubview:shareButton];
@@ -262,25 +245,38 @@
     [membersOfRoom removeFromSuperview];
 }
 
-- (void)hideMoments
+- (void)didMaximizeRoom
+{
+    momentDisplayer = [[MomentsViewer alloc] init];
+    momentDisplayer.frame = CGRectMake(0, navigationHeaderHeight, self.bounds.size.width, self.bounds.size.height-navigationHeaderHeight);
+    momentDisplayer.myRoom = self.room;
+    momentDisplayer.backgroundColor = [UIColor whiteColor];
+    momentDisplayer.tableDelegate = self;
+    [self addSubview:momentDisplayer];
+}
+
+- (void)willMinimizeRoom
+{
+    if (isMinimized == NO) {
+        isMinimized = YES;
+        
+        [minimizeButton removeFromSuperview];
+        [shareButton removeFromSuperview];
+        [lifetimeSlider removeFromSuperview];
+        [labels removeFromSuperview];
+        [notificationSwitch removeFromSuperview];
+        [notificationLabel removeFromSuperview];
+        [removeButton removeFromSuperview];
+        [self addSubview:membersOfRoom];
+        
+        momentDisplayer.hidden = YES;
+    }
+}
+
+- (void)didMinimizeRoom
 {
     [momentDisplayer removeFromSuperview];
     momentDisplayer = nil;
-    
-    [minimizeButton removeFromSuperview];
-    [shareButton removeFromSuperview];
-    [lifetimeSlider removeFromSuperview];
-    [labels removeFromSuperview];
-    [notificationSwitch removeFromSuperview];
-    [notificationLabel removeFromSuperview];
-    [removeButton removeFromSuperview];
-    
-    [self addSubview:membersOfRoom];
-}
-
-- (void)panningOnScroller:(UIGestureRecognizer*)recognizer
-{
-    NSLog(@"pan recognizer: %@", recognizer);
 }
 
 - (void)share
@@ -299,6 +295,11 @@
     [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:messageController animated:YES completion:nil];
 }
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    locationAtScrollStart = momentDisplayer.frame.origin.y;
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if (scrollView == membersOfRoom) {
@@ -306,25 +307,31 @@
     }
     UIPanGestureRecognizer *recognizer = scrollView.panGestureRecognizer;
     if (recognizer.state == UIGestureRecognizerStateChanged) {
-        NSLog(@"contentoffset: %@, translation: %@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGPoint([recognizer translationInView:momentDisplayer]));
+        if (isMinimized) {
+            self.center = [recognizer locationInView:self.superview];
+            return;
+        }
+        
+        CGPoint newOffset = [recognizer translationInView:momentDisplayer];
+        newOffset.x = 0;
         if (scrollView.contentOffset.y < 0) {
-            CGPoint newOffset = [recognizer translationInView:momentDisplayer];
-            newOffset.x = 0;
-            newOffset.y *= -1;
-            scrollView.contentOffset = newOffset;
-        } else {
-            /*
-            CGRect screenBounds = [[UIScreen mainScreen] bounds];
-            CGPoint newOffset = [recognizer translationInView:momentDisplayer];
-            CGFloat percentToMinimize = 1 - newOffset.y / screenBounds.size.height;
-            NSLog(@"pulled down: %f", percentToMinimize);
-            if (percentToMinimize > 0.5) {
+            if (newOffset.y > (navigationHeaderHeight + 150)) {
+                //start dimming the controls
+            }
+            if (newOffset.y > (self.bounds.size.height/2.0 * 0.8)) {
+                [self willMinimizeRoom];
+                CGSize minimizedSize = [self.delegate sizeOfMininimzedRoom];
+                self.bounds = CGRectMake(0, 0, minimizedSize.width, minimizedSize.height);
                 self.center = [recognizer locationInView:self.superview];
+            } else {
+                scrollView.contentOffset = CGPointZero;
+                momentDisplayer.frame = CGRectMake(0, newOffset.y + locationAtScrollStart, self.bounds.size.width, self.bounds.size.height-navigationHeaderHeight);
             }
-            else {
-                self.bounds = CGRectMake(0, 0, screenBounds.size.width * percentToMinimize, screenBounds.size.height * percentToMinimize);
+        } else {
+            if (momentDisplayer.frame.origin.y > navigationHeaderHeight) {
+                momentDisplayer.frame = CGRectMake(0, MAX(locationAtScrollStart + newOffset.y,navigationHeaderHeight), self.bounds.size.width, self.bounds.size.height-navigationHeaderHeight);
+                scrollView.contentOffset = CGPointZero;
             }
-             */
         }
     }
 }
@@ -334,16 +341,23 @@
     if (scrollView == membersOfRoom) {
         return;
     }
-    if (scrollView.contentOffset.y < 0 && scrollView.contentOffset.y > -150) {
-        /*
-        CGPoint center = momentDisplayer.center;
-        center.y += scrollView.contentOffset.y * -1;
-        momentDisplayer.center = center;
-        targetContentOffset->y = 0;
-        scrollView.contentOffset = CGPointMake(0, 0);
-         */
+    
+    if (isMinimized) {
+        [self.delegate minimizeRoom];
     }
-    NSLog(@"velocity: %@ at %@", NSStringFromCGPoint(velocity), NSStringFromCGPoint(scrollView.contentOffset));
+    
+    if (momentDisplayer.frame.origin.y > navigationHeaderHeight) {
+        CGPoint velocity = [scrollView.panGestureRecognizer velocityInView:momentDisplayer];
+        CGPoint translation = [scrollView.panGestureRecognizer translationInView:momentDisplayer];
+        if (velocity.y < 0) {
+            momentDisplayer.frame = CGRectMake(0, navigationHeaderHeight, self.bounds.size.width, self.bounds.size.height-navigationHeaderHeight);
+            targetContentOffset->y = 0;
+        } else {
+            momentDisplayer.frame = CGRectMake(0, navigationHeaderHeight + 150, self.bounds.size.width, self.bounds.size.height-navigationHeaderHeight);
+            targetContentOffset->y = 0;
+        }
+        
+    }
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
