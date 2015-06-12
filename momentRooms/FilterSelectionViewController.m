@@ -83,6 +83,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     if (self.room) {
         navigationBar.backgroundColor = self.room.backgroundColor;
     }

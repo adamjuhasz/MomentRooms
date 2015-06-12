@@ -77,7 +77,13 @@
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-    
+    NSArray *pathComponents = [url pathComponents];
+    if ([url.host isEqualToString:@"room"]) {
+        NSLog(@"%@", pathComponents[1]);
+        [[MomentsCloud sharedCloud] subscribeToRoomWithID:pathComponents[1] withCompletionHandler:^(MomentRoom *theRoom) {
+            
+        }];
+    }
     return YES;
 }
 

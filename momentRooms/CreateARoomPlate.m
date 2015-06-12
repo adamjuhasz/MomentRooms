@@ -21,6 +21,7 @@
     ANImageBitmapRep *bitmapRep;
     RACSignal *createActiveSignal;
     UIButton *chooseButton;
+    UIImage *newRoomImage;
 }
 @end
 @implementation CreateARoomPlate
@@ -41,7 +42,6 @@
         gradient = [[UIImageView alloc] initWithImage:gradientImage];
         gradient.layer.borderColor = [[UIColor blackColor] CGColor];
         gradient.layer.borderWidth = 1.0;
-        gradient.hidden = YES;
         [self addSubview:gradient];
         
         UIPanGestureRecognizer *panning = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(isPanning:)];
@@ -54,9 +54,28 @@
         [chooseButton addTarget:self action:@selector(selectAPhoto) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:chooseButton];
         
+        newRoomImage = [UIImage imageNamed:@"newroom"];
+        backgroundView.image = newRoomImage;
+        backgroundView.alpha = 1.0;
+        
+        gradient.hidden = YES;
+        notificationSwitch.hidden = YES;
+        notificationLabel.hidden = YES;
+        removeButton.hidden = YES;
+        
         __weak CreateARoomPlate *weakSelf = self;
         [RACObserve(weakSelf, contrastColor) subscribeNext:^(UIColor *contrast) {
             text.layer.borderColor = contrast.CGColor;
+        }];
+        
+        [[RACObserve(backgroundView, image) filter:^BOOL(id value) {
+            return (value != nil);
+        }] subscribeNext:^(UIImage *newImage) {
+            if (newImage == newRoomImage) {
+                return;
+            }
+            backgroundView.alpha = 0.2;
+            backgroundView.hidden = NO;
         }];
         
         RACSignal *validRoomName = [text.rac_textSignal
@@ -113,6 +132,9 @@
     
     [text becomeFirstResponder];
     chooseButton.hidden = NO;
+    if (backgroundView.image == newRoomImage) {
+        backgroundView.hidden = YES;
+    }
 }
 
 - (void)hideMoments
@@ -126,6 +148,7 @@
     gradient.hidden = YES;
     text.hidden = YES;
     chooseButton.hidden = YES;
+    backgroundView.hidden = NO;
 }
 
 - (void)share

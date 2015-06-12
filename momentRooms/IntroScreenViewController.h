@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Moment/MomentRoom.h>
 
 @interface IntroScreenViewController : UIViewController
+
+- (void)openRoom:(MomentRoom *)theRoom;
 
 @end

@@ -15,7 +15,8 @@
 
 @protocol RoomDelegate <NSObject>
 @required
--(void)minimizeRoom;
+- (void)minimizeRoom;
+- (void)maximizeRoom;
 
 @end
 
@@ -32,6 +33,9 @@
     UICollectionView *membersOfRoom;
     NSArray *memberList;
     UIImageView *backgroundView;
+    UISwitch *notificationSwitch;
+    UILabel *notificationLabel;
+    UIButton *removeButton;
 }
 
 @property UIColor *contrastColor;
@@ -39,6 +43,11 @@
 @property MomentRoom *room;
 
 @property id <RoomDelegate> delegate;
+
+- (void)willMaximizeRoom;
+- (void)didMaximizeRoom;
+- (void)willMinimizeRoom;
+- (void)didMinimizeRoom;
 
 - (void)showMoments;
 - (void)hideMoments;

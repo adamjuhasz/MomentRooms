@@ -36,7 +36,7 @@
     addPhoto.center = CGPointMake(self.view.bounds.size.width/2.0, 150);
     addPhoto.roundBackgroundColor = [UIColor blueColor];
     addPhoto.hidden = YES;
-    [self.view addSubview:addPhoto];
+    //[self.view addSubview:addPhoto];
     
     CGFloat usernameInset = 40;
     usernameField = [[JVFloatLabeledTextField alloc] initWithFrame:CGRectMake(usernameInset, 250, self.view.bounds.size.width - usernameInset*2, 44)];
@@ -89,7 +89,7 @@
 {
     PFUser *current = [PFUser currentUser];
     
-    [current setUsername:usernameField.text];
+    current[@"nickname"] =  usernameField.text;
     current[@"isNewDigitUser"] = @(NO);
     [current saveEventually];
     

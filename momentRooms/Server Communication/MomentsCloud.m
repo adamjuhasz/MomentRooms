@@ -44,9 +44,10 @@
         [RACObserve(self, loggedIn) subscribeNext:^(NSNumber *isLoggedIn) {
             @strongify(self);
             if ([isLoggedIn boolValue]) {
-                [self loadCachedsubscribedRooms];
-                [self getCachedMomentsForSubscribedRoomsWithCompletionBlock:nil];
-                [self getsubscribedRoomsWithCompletionBlock:^{
+                [self loadCachedsubscribedRoomsWithCompletionBlock:^(NSArray *rooms) {
+                    [self getCachedMomentsForSubscribedRoomsWithCompletionBlock:nil];
+                }];
+                [self getsubscribedRoomsWithCompletionBlock:^(NSArray* rooms){
                     [self getMomentsForSubscribedRoomsWithCompletionBlock:nil];
                 }];
             }
@@ -55,7 +56,7 @@
         if ([PFUser currentUser]) {
             self.loggedIn = YES;
         }
-        [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(getMomentsForSubscribedRooms) userInfo:nil repeats:YES];
+        //[NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(getMomentsForSubscribedRooms) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -136,17 +137,18 @@
         return;
     }
     
-    [createdRoom pinInBackground];
-    [createdRoom saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-        if (!error) {
-            
-        } else {
-            NSLog(@"Error creating room %@; %@", createdRoom, error);
-            [createdRoom unpinInBackground];
-        }
-        [self loadCachedsubscribedRooms];
+    [createdRoom pinInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
     }];
-    [self loadCachedsubscribedRooms];
+    [createdRoom saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            NSLog(@"Error creating room %@; %@", createdRoom, error);
+            [createdRoom unpinInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
+            }];
+        }
+        [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
+    }];
 }
 
 - (void)addMoment:(Moment*)moment ToRoom:(MomentRoom*)roomObject
@@ -506,7 +508,7 @@
 }
 
 #pragma mark Get MomentRooms
-- (void)getsubscribedRoomsWithCompletionBlock:(void (^)(void))completionBlock
+- (void)getsubscribedRoomsWithCompletionBlock:(void (^)(NSArray*))completionBlock
 {
     if ([PFUser currentUser] == nil) {
         return;
@@ -530,67 +532,84 @@
             if (!error) {
                 NSString *nameOfObjectPin = @"subscribedRooms";
                 [PFObject unpinAllObjectsInBackgroundWithName:nameOfObjectPin];
+                NSMutableArray *momentRooms = [NSMutableArray array];
                 for (PFObject *room in rooms) {
                     NSLog(@"%@ called %@", room.objectId, room[@"name"]);
+                    MomentRoom *aNewRoom = [self convertToMomentRoomFromPFObject:room];
+                    if (aNewRoom) {
+                        [momentRooms addObject:aNewRoom];
+                    }
                 }
-                [PFObject pinAllInBackground:rooms withName:nameOfObjectPin block:nil];
-                [self loadCachedsubscribedRooms];
-                
-                if (completionBlock) {
-                    completionBlock();
-                }
+                [PFObject pinAllInBackground:rooms withName:nameOfObjectPin block:^(BOOL succeeded, NSError *PF_NULLABLE_S error){
+                    [self loadCachedsubscribedRoomsWithCompletionBlock:^(NSArray *rooms) {
+                        if (completionBlock) {
+                            completionBlock(momentRooms);
+                        }
+                    }];
+                    
+                }];
             }
         }];
     }];
 }
 
-- (void)loadCachedsubscribedRooms
+- (void)loadCachedsubscribedRoomsWithCompletionBlock:(void (^)(NSArray*))completionBlock
 {
     PFQuery *query = [PFQuery queryWithClassName:@"Room"];
     [[query fromLocalDatastore] ignoreACLs];
-    NSArray *cachedRooms = [query findObjects];
-    
-    NSMutableArray *rooms = [NSMutableArray array];
-    for (PFObject *aRoom in cachedRooms) {
-        BOOL roomIsCached = NO;
-        MomentRoom *newRoom = [self convertToMomentRoomFromPFObject:aRoom];
-        if (self.subscribedRooms) {
-            for (MomentRoom *room in self.subscribedRooms) {
-                if ([room.roomid isEqualToString:aRoom.objectId]) {
-                    roomIsCached = YES;
-                    //change room details
-                    if ([room.roomName isEqualToString:newRoom.roomName] == NO) {
-                        room.roomName = newRoom.roomName;
+    [query findObjectsInBackgroundWithBlock:^(NSArray *cachedRooms, NSError *error){
+        if (error) {
+            NSLog(@"error getting cached rooms, %@", error);
+            return;
+        }
+        
+        NSMutableArray *rooms = [NSMutableArray array];
+        for (PFObject *aRoom in cachedRooms) {
+            BOOL roomIsCached = NO;
+            MomentRoom *newRoom = [self convertToMomentRoomFromPFObject:aRoom];
+            if (self.subscribedRooms) {
+                for (MomentRoom *room in self.subscribedRooms) {
+                    if ([room.roomid isEqualToString:aRoom.objectId]) {
+                        roomIsCached = YES;
+                        //change room details
+                        if ([room.roomName isEqualToString:newRoom.roomName] == NO) {
+                            room.roomName = newRoom.roomName;
+                        }
+                        if (room.roomLifetime != newRoom.roomLifetime) {
+                            room.roomLifetime = newRoom.roomLifetime;
+                        }
+                        //should the background be changable
+                        if ([room.backgroundColor isEquivalentToColor:newRoom.backgroundColor] == NO) {
+                            room.backgroundColor = newRoom.backgroundColor;
+                        }
+                        continue;
                     }
-                    if (room.roomLifetime != newRoom.roomLifetime) {
-                        room.roomLifetime = newRoom.roomLifetime;
-                    }
-                    //should the background be changable
-                    if ([room.backgroundColor isEquivalentToColor:newRoom.backgroundColor] == NO) {
-                        room.backgroundColor = newRoom.backgroundColor;
-                    }
-                    continue;
                 }
+                
             }
-            
+            if (roomIsCached == NO) {
+                [rooms addObject:newRoom];
+            }
         }
-        if (roomIsCached == NO) {
-            [rooms addObject:newRoom];
+        
+        if (self.subscribedRooms == nil) {
+            self.subscribedRooms = [NSMutableArray array];
         }
-    }
+        
+        NSMutableArray *theseMoments = [self mutableArrayValueForKey:@"subscribedRooms"];
+        [theseMoments addObjectsFromArray:rooms];
+        if (completionBlock) {
+            completionBlock(rooms);
+        }
+    }];
     
-    if (self.subscribedRooms == nil) {
-        self.subscribedRooms = [NSMutableArray array];
-    }
     
-    NSMutableArray *theseMoments = [self mutableArrayValueForKey:@"subscribedRooms"];
-    [theseMoments addObjectsFromArray:rooms];
 }
 
 - (NSArray*)cachedSubscribedRooms
 {
     if (self.subscribedRooms == nil) {
-        [self loadCachedsubscribedRooms];
+        [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
     }
     return self.subscribedRooms;
 }
@@ -606,7 +625,7 @@
 }
 
 #pragma mark Subscribe to Rooms
-- (void)subscribeToRoomWithID:(NSString *)roomID
+- (void)subscribeToRoomWithID:(NSString *)roomID withCompletionHandler:(void (^)(MomentRoom*))completionBlock
 {
     if ([PFUser currentUser] == nil) {
         return;
@@ -620,7 +639,19 @@
             [role.users addObject:[PFUser currentUser]];
             [role saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                 if (succeeded) {
-                    [self getsubscribedRoomsWithCompletionBlock:nil];
+                    [self getsubscribedRoomsWithCompletionBlock:^(NSArray *rooms) {
+                        for (MomentRoom *aRoom in rooms) {
+                            if ([aRoom.roomid isEqualToString:roomID]) {
+                                if (completionBlock) {
+                                    completionBlock(aRoom);
+                                }
+                                [self getMomentsForRoom:aRoom WithCompletionBlock:^(NSArray *moments) {
+                                
+                                }];
+                            }
+                        }
+                        
+                    }];
                 }
             }];
         }

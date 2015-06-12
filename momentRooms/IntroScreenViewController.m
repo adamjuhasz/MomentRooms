@@ -64,9 +64,8 @@
     
     addButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(self.view.bounds.size.width - 60, self.view.bounds.size.height - 60, 33, 33) buttonType:buttonAddType buttonStyle:buttonRoundedStyle animateToInitialState:NO];
     addButton.roundBackgroundColor = [UIColor redColor];
-    addButton.hidden = YES;
     [addButton addTarget:self action:@selector(newMoment) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:addButton];
+    //[self.view addSubview:addButton];
     
     inset = 1;
     
@@ -94,13 +93,14 @@
         constantRooms++;
         i++;
         
- 
+        /*
         LocalRoomPlate *localPlate = [[LocalRoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
         LocalRoom *localRoom = [[LocalRoom alloc] init];
         [cachedRooms insertObject:localRoom atIndex:i];
         [self setupPlate:localPlate withRoom:localRoom intoPosition:i];
         constantRooms++;
         i++;
+         */
         
         for (; i<cachedRooms.count; i++) {
             MomentRoom *theRoomModel = cachedRooms[i];
@@ -243,7 +243,7 @@
     [room removeFromSuperview];
     room.bounds = CGRectMake(0, 0, frameInController.size.width, frameInController.size.height);
     room.center = CGPointMake(CGRectGetMidX(frameInController), CGRectGetMidY(frameInController));
-    [self.view insertSubview:selectedRoom belowSubview:addButton];
+    [self.view addSubview:selectedRoom];
     
     POPSpringAnimation *boundAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewBounds];
     boundAnimation.toValue = [NSValue valueWithCGRect:self.view.bounds];
@@ -271,7 +271,7 @@
     if (selectedRoom.room.allowsPosting) {
         addButton.roundBackgroundColor = selectedRoom.room.backgroundColor;
         addButton.tintColor = selectedRoom.contrastColor;
-        addButton.hidden = NO;
+        [self.view insertSubview:addButton aboveSubview:selectedRoom];
     }
 }
 
@@ -309,7 +309,7 @@
         recognizer.enabled = YES;
     }
     
-    addButton.hidden = YES;
+    [addButton removeFromSuperview];
     selectedRoom = nil;
 }
 

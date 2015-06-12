@@ -14,7 +14,7 @@
 #import <TGPControls/TGPDiscreteSlider.h>
 #import "UserCell.h"
 
-@interface RoomPlate () <UITableViewDelegate, UICollectionViewDataSource>
+@interface RoomPlate () <UITableViewDelegate, UICollectionViewDataSource, MFMessageComposeViewControllerDelegate>
 
 @end
 
@@ -39,18 +39,18 @@
         feed = [[UIView alloc] initWithFrame:self.bounds];
         feed.hidden = YES;
         feed.backgroundColor = [UIColor whiteColor];
-        [self addSubview:feed];
+        //[self addSubview:feed];
         
         minimizeButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(8, 28, 20, 20) buttonType:buttonDownBasicType buttonStyle:buttonPlainStyle animateToInitialState:YES];
         minimizeButton.tintColor = [UIColor whiteColor];
         [minimizeButton addTarget:self.delegate action:@selector(minimizeRoom) forControlEvents:UIControlEventTouchUpInside];
-        minimizeButton.hidden = YES;
+        //minimizeButton.hidden = YES;
         [self addSubview:minimizeButton];
         
         shareButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(self.bounds.size.width-28, 28, 20, 20) buttonType:buttonShareType buttonStyle:buttonPlainStyle animateToInitialState:NO];
         shareButton.tintColor = [UIColor whiteColor];
         [shareButton addTarget:self action:@selector(share) forControlEvents:UIControlEventTouchUpInside];
-        shareButton.hidden = YES;
+        //shareButton.hidden = YES;
         [self addSubview:shareButton];
         
         CGRect bounds = [[UIScreen mainScreen] bounds];
@@ -66,12 +66,12 @@
         lifetimeSlider.minimumValue = 0;
         lifetimeSlider.incrementValue = 1;
         lifetimeSlider.backgroundColor = [UIColor clearColor];
-        lifetimeSlider.hidden = YES;
+        //lifetimeSlider.hidden = YES;
         [self addSubview:lifetimeSlider];
 
         labels = [[TGPCamelLabels alloc] initWithFrame:CGRectMake(20, 70, bounds.size.width-40, 25)];
         labels.names = ticks;
-        labels.hidden = YES;
+        //labels.hidden = YES;
         [self addSubview:labels];
         
         lifetimeSlider.ticksListener = labels;
@@ -87,6 +87,22 @@
         membersOfRoom.backgroundColor = [UIColor clearColor];
         [self addSubview:membersOfRoom];
         
+        notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
+        notificationSwitch.onTintColor = [UIColor whiteColor];
+        notificationSwitch.enabled = NO;
+        [self addSubview:notificationSwitch];
+        
+        notificationLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 300, 44)];
+        notificationLabel.text = @"Get notifications for new posts";
+        [notificationLabel sizeToFit];
+        [self addSubview:notificationLabel];
+        
+        removeButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 200, 44)];
+        [removeButton setTitle:@"Leave room" forState:UIControlStateNormal];
+        [removeButton sizeToFit];
+        removeButton.enabled = NO;
+        [self addSubview:removeButton];
+        
         backgroundView = [[UIImageView alloc] initWithFrame:self.bounds];
         backgroundView.alpha = 0.2;
         backgroundView.contentMode = UIViewContentModeScaleAspectFill;
@@ -98,7 +114,9 @@
         [RACObserve(self, room) subscribeNext:^(MomentRoom *newRoom) {
             @strongify(self);
             
-            [RACObserve(newRoom, backgroundImage) subscribeNext:^(UIImage *backgroundImage) {
+            [[RACObserve(newRoom, backgroundImage) filter:^BOOL(id value) {
+                return (value != nil);
+            }] subscribeNext:^(UIImage *backgroundImage) {
                 backgroundView.image = backgroundImage;
             }];
             
@@ -121,6 +139,8 @@
                 labels.upFontColor = self.contrastColor;
                 labels.downFontColor = self.contrastColor;
                 lifetimeSlider.thumbColor = self.contrastColor;
+                notificationLabel.textColor = self.contrastColor;
+                [removeButton setTitleColor:self.contrastColor forState:UIControlStateNormal];
             }];
             [RACObserve(newRoom, roomLifetime) subscribeNext:^(NSNumber *newLifetime) {
                 switch ([newLifetime integerValue]) {
@@ -154,6 +174,8 @@
                 labels.value = lifetimeSlider.value;
             }];
         }];
+        
+        [self hideMoments];
     }
     return self;
 }
@@ -193,6 +215,11 @@
     labels.bounds = CGRectMake(0, 0, bounds.size.width-50, 20);
     labels.center = CGPointMake(bounds.size.width/2.0, labels.center.y);
     
+    notificationSwitch.center = CGPointMake(self.bounds.size.width - (27 + notificationSwitch.bounds.size.width/2.0), 150);
+    notificationLabel.center = CGPointMake(27 + notificationLabel.bounds.size.width/2.0, 150);
+    
+    removeButton.center = CGPointMake(27 + removeButton.bounds.size.width/2.0, 180);
+    
     backgroundView.frame = bounds;
 }
 
@@ -201,6 +228,7 @@
     momentDisplayer = [[MomentsViewer alloc] init];
     momentDisplayer.frame = CGRectMake(0, 64, self.bounds.size.width, self.bounds.size.height-64);
     momentDisplayer.myRoom = self.room;
+    //momentDisplayer.backgroundColor = [UIColor whiteColor];
     momentDisplayer.tableDelegate = self;
     
     RACSignal *hasMomentsToDisplay = [RACObserve(momentDisplayer.myRoom, moments)
@@ -216,19 +244,22 @@
     [createActiveSignal subscribeNext:^(NSNumber *isValid) {
         //allow saving
         if ([isValid boolValue] == YES) {
-            momentDisplayer.hidden = NO;
+            //momentDisplayer.hidden = NO;
         } else {
-            momentDisplayer.hidden = YES;
+            //momentDisplayer.hidden = YES;
         }
     }];
-
+    
+    [self addSubview:minimizeButton];
+    [self addSubview:shareButton];
+    [self addSubview:lifetimeSlider];
+    [self addSubview:labels];
+    [self addSubview:notificationSwitch];
+    [self addSubview:notificationLabel];
+    [self addSubview:removeButton];
     [self addSubview:momentDisplayer];
     
-    minimizeButton.hidden = NO;
-    shareButton.hidden = NO;
-    lifetimeSlider.hidden = NO;
-    labels.hidden = NO;
-    membersOfRoom.hidden = YES;
+    [membersOfRoom removeFromSuperview];
 }
 
 - (void)hideMoments
@@ -236,11 +267,20 @@
     [momentDisplayer removeFromSuperview];
     momentDisplayer = nil;
     
-    minimizeButton.hidden = YES;
-    shareButton.hidden = YES;
-    lifetimeSlider.hidden = YES;
-    labels.hidden = YES;
-    membersOfRoom.hidden = NO;
+    [minimizeButton removeFromSuperview];
+    [shareButton removeFromSuperview];
+    [lifetimeSlider removeFromSuperview];
+    [labels removeFromSuperview];
+    [notificationSwitch removeFromSuperview];
+    [notificationLabel removeFromSuperview];
+    [removeButton removeFromSuperview];
+    
+    [self addSubview:membersOfRoom];
+}
+
+- (void)panningOnScroller:(UIGestureRecognizer*)recognizer
+{
+    NSLog(@"pan recognizer: %@", recognizer);
 }
 
 - (void)share
@@ -255,6 +295,7 @@
     NSString *mesageString = [NSString stringWithFormat:@"Join \"%@\" on Moments, moments://room/%@", self.room.roomName, self.room.roomid];
     [messageController setBody:mesageString];
     
+    messageController.messageComposeDelegate = self;
     [[[[UIApplication sharedApplication] keyWindow] rootViewController] presentViewController:messageController animated:YES completion:nil];
 }
 
@@ -263,13 +304,44 @@
     if (scrollView == membersOfRoom) {
         return;
     }
-    NSLog(@"now at %@", NSStringFromCGPoint(scrollView.contentOffset));
+    UIPanGestureRecognizer *recognizer = scrollView.panGestureRecognizer;
+    if (recognizer.state == UIGestureRecognizerStateChanged) {
+        NSLog(@"contentoffset: %@, translation: %@", NSStringFromCGPoint(scrollView.contentOffset), NSStringFromCGPoint([recognizer translationInView:momentDisplayer]));
+        if (scrollView.contentOffset.y < 0) {
+            CGPoint newOffset = [recognizer translationInView:momentDisplayer];
+            newOffset.x = 0;
+            newOffset.y *= -1;
+            scrollView.contentOffset = newOffset;
+        } else {
+            /*
+            CGRect screenBounds = [[UIScreen mainScreen] bounds];
+            CGPoint newOffset = [recognizer translationInView:momentDisplayer];
+            CGFloat percentToMinimize = 1 - newOffset.y / screenBounds.size.height;
+            NSLog(@"pulled down: %f", percentToMinimize);
+            if (percentToMinimize > 0.5) {
+                self.center = [recognizer locationInView:self.superview];
+            }
+            else {
+                self.bounds = CGRectMake(0, 0, screenBounds.size.width * percentToMinimize, screenBounds.size.height * percentToMinimize);
+            }
+             */
+        }
+    }
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
     if (scrollView == membersOfRoom) {
         return;
+    }
+    if (scrollView.contentOffset.y < 0 && scrollView.contentOffset.y > -150) {
+        /*
+        CGPoint center = momentDisplayer.center;
+        center.y += scrollView.contentOffset.y * -1;
+        momentDisplayer.center = center;
+        targetContentOffset->y = 0;
+        scrollView.contentOffset = CGPointMake(0, 0);
+         */
     }
     NSLog(@"velocity: %@ at %@", NSStringFromCGPoint(velocity), NSStringFromCGPoint(scrollView.contentOffset));
 }
@@ -286,6 +358,11 @@
     cell.user = memberList[[indexPath indexAtPosition:1]];
     
     return cell;
+}
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
+{
+    [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
