@@ -13,6 +13,8 @@
 #import <TGPControls/TGPCamelLabels.h>
 #import <TGPControls/TGPDiscreteSlider.h>
 #import "UserCell.h"
+#import "AppDelegate.h"
+#import "MomentsCloud.h"
 
 @interface RoomPlate () <UITableViewDelegate, UICollectionViewDataSource, MFMessageComposeViewControllerDelegate>
 {
@@ -42,21 +44,14 @@
         text.returnKeyType = UIReturnKeyDone;
         [self addSubview:text];
         
-        feed = [[UIView alloc] initWithFrame:self.bounds];
-        feed.hidden = YES;
-        feed.backgroundColor = [UIColor whiteColor];
-        //[self addSubview:feed];
-        
         minimizeButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(8, 28, 20, 20) buttonType:buttonDownBasicType buttonStyle:buttonPlainStyle animateToInitialState:YES];
         minimizeButton.tintColor = [UIColor whiteColor];
         [minimizeButton addTarget:self.delegate action:@selector(minimizeRoom) forControlEvents:UIControlEventTouchUpInside];
-        //minimizeButton.hidden = YES;
         [self addSubview:minimizeButton];
         
         shareButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(self.bounds.size.width-28, 28, 20, 20) buttonType:buttonShareType buttonStyle:buttonPlainStyle animateToInitialState:NO];
         shareButton.tintColor = [UIColor whiteColor];
         [shareButton addTarget:self action:@selector(share) forControlEvents:UIControlEventTouchUpInside];
-        //shareButton.hidden = YES;
         [self addSubview:shareButton];
         
         CGRect bounds = [[UIScreen mainScreen] bounds];
@@ -72,12 +67,10 @@
         lifetimeSlider.minimumValue = 0;
         lifetimeSlider.incrementValue = 1;
         lifetimeSlider.backgroundColor = [UIColor clearColor];
-        //lifetimeSlider.hidden = YES;
         [self addSubview:lifetimeSlider];
 
         labels = [[TGPCamelLabels alloc] initWithFrame:CGRectMake(20, 70, bounds.size.width-40, 25)];
         labels.names = ticks;
-        //labels.hidden = YES;
         [self addSubview:labels];
         
         lifetimeSlider.ticksListener = labels;
@@ -106,7 +99,8 @@
         removeButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 200, 44)];
         [removeButton setTitle:@"Leave room" forState:UIControlStateNormal];
         [removeButton sizeToFit];
-        removeButton.enabled = NO;
+        removeButton.enabled = YES;
+        [removeButton addTarget:self action:@selector(LeaveRoom) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:removeButton];
         
         backgroundView = [[UIImageView alloc] initWithFrame:self.bounds];
@@ -377,6 +371,31 @@
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
 {
     [[[[UIApplication sharedApplication] keyWindow] rootViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)LeaveRoom
+{
+    NSString *textOfAlert = [NSString stringWithFormat:@"Are you sure you want to leave %@?", self.room.roomName];
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@""
+                                                                   message:textOfAlert
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* stayAction = [UIAlertAction actionWithTitle:@"Stay" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
+                                                              
+                                                          }];
+    UIAlertAction* leaveAction = [UIAlertAction actionWithTitle:@"Leave" style:UIAlertActionStyleDestructive
+                                                          handler:^(UIAlertAction * action) {
+                                                              [self.delegate minimizeRoom];
+                                                              [[MomentsCloud sharedCloud] unSubscribeFromRoom:self.room withCompletionHandler:nil];
+                                                          }];
+    
+    [alert addAction:stayAction];
+    [alert addAction:leaveAction];
+    
+    AppDelegate *appDel = [[UIApplication sharedApplication] delegate];
+    IntroScreenViewController *root = appDel.mainViewController;
+    [root presentViewController:alert animated:YES completion:nil];
 }
 
 @end

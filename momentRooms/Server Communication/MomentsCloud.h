@@ -32,8 +32,11 @@
 - (void)createRoom:(MomentRoom*)newRoom;
 - (void)addMoment:(Moment*)moment ToRoom:(MomentRoom*)room;
 
-//consumption
+//Room Management
 - (void)subscribeToRoomWithID:(NSString *)roomID withCompletionHandler:(void (^)(MomentRoom*))completionBlock;
+- (void)unSubscribeFromRoom:(MomentRoom*)room withCompletionHandler:(void (^)(void))completionBlock;
+
+//consumption
 - (void)getMomentsForSubscribedRoomsWithCompletionBlock:(void (^)(NSArray*))completionBlock;
 - (void)getMomentsForRoom:(MomentRoom*)room WithCompletionBlock:(void (^)(NSArray*))completionBlock;
 - (void)getCachedMomentsForRoom:(MomentRoom*)room WithCompletionBlock:(void (^)(NSArray*))completionBlock;

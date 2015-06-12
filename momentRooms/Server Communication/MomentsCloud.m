@@ -658,6 +658,37 @@
     }];
 }
 
+- (void)unSubscribeFromRoom:(MomentRoom*)room withCompletionHandler:(void (^)(void))completionBlock
+{
+    if ([PFUser currentUser] == nil) {
+        return;
+    }
+    
+    PFQuery *roleQuery = [PFRole query];
+    [roleQuery whereKey:@"name" equalTo:room.roomid];
+    [roleQuery getFirstObjectInBackgroundWithBlock:^(PFObject *roleObject,  NSError *error){
+        if (!error) {
+            PFRole *role = (PFRole*)roleObject;
+            [role.users removeObject:[PFUser currentUser]];
+            [role saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+                if (succeeded) {
+                    PFObject *roomObject = [PFObject objectWithoutDataWithObjectId:room.roomid];
+                    [PFObject unpinAllInBackground:@[roomObject] block:^(BOOL succeeded, NSError *error){
+                        if(error) {
+                            NSLog(@"error unpinng unsubscribed room: %@", error);
+                        }
+                        [self loadCachedsubscribedRoomsWithCompletionBlock:^(NSArray *currentRoom) {
+                            if (completionBlock) {
+                                completionBlock();
+                            }
+                        }];
+                    }];
+                }
+            }];
+        }
+    }];
+}
+
 #pragma mark Get Users
 - (MomentUser*)convertPFUserToMomentUser:(PFUser*)user
 {
