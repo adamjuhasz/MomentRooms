@@ -16,7 +16,7 @@
 @protocol RoomDelegate <NSObject>
 @required
 - (void)minimizeRoom;
-- (void)maximizeRoom;
+//- (void)maximizeRoom;
 - (CGSize)sizeOfMininimzedRoom;
 
 @end
