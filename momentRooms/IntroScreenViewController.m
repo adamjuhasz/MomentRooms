@@ -136,7 +136,7 @@
 
 - (void)tapping:(UITapGestureRecognizer*)recognizer
 {
-    [self lockInRoom:(RoomPlate*)recognizer.view];
+    [self maximizeRoom:(RoomPlate*)recognizer.view];
 }
 
 - (void)panning:(UIPanGestureRecognizer*)recognizer
@@ -154,7 +154,7 @@
             if (fabs(velocity.y) > 20) {
                 //negative velocuty is moving towards top of screen
                 if (velocity.y < 0) {
-                    [self lockInRoom:(RoomPlate*)recognizer.view];
+                    [self maximizeRoom:(RoomPlate*)recognizer.view];
                 } else {
                     recognizer.view.center = centerLocation;
                     recognizer.view.bounds = CGRectMake(0, 0, height*9/16, height);
@@ -224,13 +224,13 @@
             continue;
         }
         if ([plate.room.roomid isEqualToString:theRoom.roomid]) {
-            [self lockInRoom:plate];
+            [self maximizeRoom:plate];
             break;
         }
     }
 }
 
-- (void)lockInRoom:(RoomPlate*)room
+- (void)maximizeRoom:(RoomPlate*)room
 {
     selectedRoom = room;
     [[MomentsCloud sharedCloud] getCachedMomentsForRoom:room.room WithCompletionBlock:nil];
