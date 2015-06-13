@@ -146,7 +146,10 @@
             [createdRoom unpinInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                 [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
             }];
+        } else {
+             [self registerForPushForRoom:newRoom];
         }
+        
         [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
     }];
 }
@@ -310,10 +313,9 @@
 {
     PFQuery *query = [PFQuery queryWithClassName:@"Room"];
     [[query fromLocalDatastore] ignoreACLs];
-    NSArray *cachedRooms = [query findObjects];
     
     PFQuery *momentsQuery = [PFQuery queryWithClassName:@"Post"];
-    [momentsQuery whereKey:@"room" containedIn:cachedRooms];
+    [momentsQuery whereKey:@"room" matchesQuery:query];
     [momentsQuery whereKey:@"expiresAt" greaterThan:[NSDate date]];
     [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *moments, NSError *error){
         if (!error) {
@@ -499,6 +501,7 @@
     }
     newRoom.roomLifetime = [room[@"expirationTime"] floatValue];
     newRoom.backgroundColor = [UIColor colorWithString:room[@"backgroundColor"]];
+    newRoom.isSubscribed = [self isRegisteredForPushForRoom:newRoom];
     
     [self getUsersForRoom:newRoom withCompletionBlock:^(NSArray *membersOfRoom) {
         newRoom.members = membersOfRoom;
@@ -620,6 +623,7 @@
     [[query fromLocalDatastore] ignoreACLs];
     [query whereKey:@"objectId" equalTo:roomID];
     PFObject *object = [query getFirstObject];
+    
     MomentRoom *room = [self convertToMomentRoomFromPFObject:object];
     return room;
 }
@@ -642,12 +646,12 @@
                     [self getsubscribedRoomsWithCompletionBlock:^(NSArray *rooms) {
                         for (MomentRoom *aRoom in rooms) {
                             if ([aRoom.roomid isEqualToString:roomID]) {
+                                //verified we have the room
+                                [self getMomentsForRoom:aRoom WithCompletionBlock:nil];
+                                [self registerForPushForRoom:aRoom];
                                 if (completionBlock) {
                                     completionBlock(aRoom);
                                 }
-                                [self getMomentsForRoom:aRoom WithCompletionBlock:^(NSArray *moments) {
-                                
-                                }];
                             }
                         }
                         
@@ -672,11 +676,13 @@
             [role.users removeObject:[PFUser currentUser]];
             [role saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
                 if (succeeded) {
+                    [self unregisterForPushForRoom:room];
                     PFObject *roomObject = [PFObject objectWithoutDataWithObjectId:room.roomid];
                     [PFObject unpinAllInBackground:@[roomObject] block:^(BOOL succeeded, NSError *error){
                         if(error) {
                             NSLog(@"error unpinng unsubscribed room: %@", error);
                         }
+                        
                         [self loadCachedsubscribedRoomsWithCompletionBlock:^(NSArray *currentRoom) {
                             if (completionBlock) {
                                 completionBlock();
@@ -737,6 +743,84 @@
         }];
         
     }];
+}
+
+#pragma mark Push Notification
+
+- (NSString*)generateChannelName:(MomentRoom*)room
+{
+    NSString *channel = [NSString stringWithFormat:@"Room_%@", room.roomid];
+    return channel;
+}
+
+- (void)requestPushPermisssion
+{
+    UIUserNotificationType userNotificationTypes = (UIUserNotificationTypeAlert | UIUserNotificationTypeBadge | UIUserNotificationTypeSound);
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:userNotificationTypes  categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+}
+
+- (void)storePushDeviceToken:(NSData*)deviceToken
+{
+    // Store the deviceToken in the current Installation and save it to Parse
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation setDeviceTokenFromData:deviceToken];
+    currentInstallation[@"user"] = [PFUser currentUser];
+    [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            NSLog(@"Couldn't save device token: %@", error);
+            [currentInstallation saveEventually];
+            return;
+        }
+    }];
+}
+
+- (void)registerForPushForRoom:(MomentRoom*)room
+{
+    [self requestPushPermisssion];
+    room.isSubscribed = YES;
+    
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation addUniqueObject:[self generateChannelName:room] forKey:@"channels"];
+    [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            NSLog(@"Couldn't register for push: %@", error);
+            [currentInstallation saveEventually];
+            
+            room.isSubscribed = NO;
+            return;
+        }
+    }];
+}
+
+- (void)unregisterForPushForRoom:(MomentRoom*)room
+{
+    room.isSubscribed = NO;
+    
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation removeObject:[self generateChannelName:room] forKey:@"channels"];
+    [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        if (error) {
+            NSLog(@"Couldn't unregister for push: %@", error);
+            [currentInstallation saveEventually];
+            
+            room.isSubscribed = YES;
+            return;
+        }
+    }];
+}
+
+- (BOOL)isRegisteredForPushForRoom:(MomentRoom*)room
+{
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    NSArray *subscribedChannels = [currentInstallation objectForKey:@"channels"];
+    for (NSString *roomId in subscribedChannels) {
+        if ([room.roomid isEqualToString:roomId]) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 #pragma mark Utilties

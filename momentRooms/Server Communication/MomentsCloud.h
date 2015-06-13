@@ -45,4 +45,11 @@
 - (NSArray*)cachedMomentsForRoom:(MomentRoom*)room;
 - (MomentRoom*)getCachedRoomWithID:(NSString*)roomID;
 
+//push
+- (void)requestPushPermisssion;
+- (void)storePushDeviceToken:(NSData*)deviceToken;
+- (void)registerForPushForRoom:(MomentRoom*)room;
+- (void)unregisterForPushForRoom:(MomentRoom*)room;
+- (BOOL)isRegisteredForPushForRoom:(MomentRoom*)room;
+
 @end

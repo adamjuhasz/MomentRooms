@@ -87,4 +87,9 @@
     return YES;
 }
 
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+{
+    [[MomentsCloud sharedCloud] storePushDeviceToken:deviceToken];
+}
+
 @end

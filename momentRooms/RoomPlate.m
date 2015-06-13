@@ -88,7 +88,7 @@
         
         notificationSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 100, 44)];
         notificationSwitch.onTintColor = [UIColor whiteColor];
-        notificationSwitch.enabled = NO;
+        [notificationSwitch addTarget:self action:@selector(changePush:) forControlEvents:UIControlEventValueChanged];
         [self addSubview:notificationSwitch];
         
         notificationLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 300, 44)];
@@ -97,7 +97,13 @@
         [self addSubview:notificationLabel];
         
         removeButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 200, 44)];
+        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc]
+                                                       initWithString:@"Leave room"];
+        [attributedString addAttribute:NSUnderlineStyleAttributeName
+                                 value:@(NSUnderlineStyleSingle)
+                                 range:NSMakeRange(0, attributedString.length)];
         [removeButton setTitle:@"Leave room" forState:UIControlStateNormal];
+        [removeButton setAttributedTitle:attributedString forState:UIControlStateNormal];
         [removeButton sizeToFit];
         removeButton.enabled = YES;
         [removeButton addTarget:self action:@selector(LeaveRoom) forControlEvents:UIControlEventTouchUpInside];
@@ -124,6 +130,10 @@
                 text.text = roomName;
             }];
             
+            [RACObserve(newRoom, isSubscribed) subscribeNext:^(NSNumber *isSubbed) {
+                notificationSwitch.on = [isSubbed boolValue];
+            }];
+            
             [RACObserve(newRoom, members) subscribeNext:^(NSArray *theMembersOfTheRoom) {
                 memberList = theMembersOfTheRoom;
                 [membersOfRoom reloadData];
@@ -139,8 +149,10 @@
                 labels.upFontColor = self.contrastColor;
                 labels.downFontColor = self.contrastColor;
                 lifetimeSlider.thumbColor = self.contrastColor;
+                NSMutableAttributedString *titleString = [[removeButton attributedTitleForState:UIControlStateNormal] mutableCopy];
+                [titleString addAttribute:NSForegroundColorAttributeName value:self.contrastColor range:NSMakeRange(0,titleString.length)];
+                [removeButton setAttributedTitle:titleString forState:UIControlStateNormal];
                 notificationLabel.textColor = self.contrastColor;
-                [removeButton setTitleColor:self.contrastColor forState:UIControlStateNormal];
             }];
             [RACObserve(newRoom, roomLifetime) subscribeNext:^(NSNumber *newLifetime) {
                 switch ([newLifetime integerValue]) {
@@ -396,6 +408,15 @@
     AppDelegate *appDel = [[UIApplication sharedApplication] delegate];
     IntroScreenViewController *root = appDel.mainViewController;
     [root presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)changePush:(UISwitch*)pushSwitch
+{
+    if (pushSwitch.on) {
+        [[MomentsCloud sharedCloud] registerForPushForRoom:self.room];
+    } else {
+        [[MomentsCloud sharedCloud] unregisterForPushForRoom:self.room];
+    }
 }
 
 @end
