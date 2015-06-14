@@ -52,4 +52,11 @@
 - (void)unregisterForPushForRoom:(MomentRoom*)room;
 - (BOOL)isRegisteredForPushForRoom:(MomentRoom*)room;
 
+//analytics
+- (void)tagEvent:(NSString*)event withInformation:(NSDictionary*)info;
+- (void)tagError:(NSString*)errorEvent withError:(NSError*)error;
+
+//utlities
+- (void)deleteExpiredMoments;
+
 @end

@@ -33,7 +33,7 @@
         [self addSubview:scroller];
         
         momentViews = [NSMutableArray array];
-        for (int i=0; i<4; i++) {
+        for (int i=0; i<5; i++) {
             CGRect aFrame = self.bounds;
             aFrame = CGRectOffset(aFrame, i*self.bounds.size.width, 0);
             MomentViewWithRoom *viewer = [[MomentViewWithRoom alloc] initWithFrame:aFrame];
@@ -51,12 +51,13 @@
         
         MomentsCloud *theCloud = [MomentsCloud sharedCloud];
         [RACObserve(theCloud, mostRecentMoments) subscribeNext:^(NSArray *recentMoments) {
-            for (int i=0; i<recentMoments.count; i++) {
+            for (int i=0; i<MIN(recentMoments.count, momentViews.count); i++) {
                 MomentViewWithRoom *aViewer = momentViews[i];
                 aViewer.moment = recentMoments[i];
             }
             pager.numberOfPages = recentMoments.count;
             scroller.contentSize = CGSizeMake(scroller.bounds.size.width*recentMoments.count, scroller.bounds.size.height);
+            [scroller scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
         }];
     }
     return self;

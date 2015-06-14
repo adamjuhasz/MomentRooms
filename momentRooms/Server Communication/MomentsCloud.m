@@ -17,7 +17,8 @@
 
 @interface MomentsCloud ()
 {
-    NSMutableArray *loadedMoments;
+    NSMutableDictionary *globalCachedMoments;
+    NSMutableDictionary *globalCachedRooms;
 }
 @end
 
@@ -38,7 +39,9 @@
     self = [super init];
     if (self) {
         self.mostRecentMoments = [NSMutableArray array];
-        loadedMoments = [NSMutableArray array];
+        self.subscribedRooms = [NSMutableArray array];
+        globalCachedMoments = [NSMutableDictionary dictionary];
+        globalCachedRooms = [NSMutableDictionary dictionary];
         
         @weakify(self);
         [RACObserve(self, loggedIn) subscribeNext:^(NSNumber *isLoggedIn) {
@@ -56,7 +59,7 @@
         if ([PFUser currentUser]) {
             self.loggedIn = YES;
         }
-        //[NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(getMomentsForSubscribedRooms) userInfo:nil repeats:YES];
+        [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(getMomentsForSubscribedRooms) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -137,20 +140,37 @@
         return;
     }
     
-    [createdRoom pinInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-        [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
-    }];
+    newRoom.roomid = [NSString stringWithFormat:@"%@_%@", @"@temp", [NSDate date]];
+    newRoom.members = @[[self convertPFUserToMomentUser:[PFUser currentUser]]];
+    NSMutableArray *subscribedRooms = [self mutableArrayValueForKey:@"subscribedRooms"];
+    [subscribedRooms insertObject:newRoom atIndex:0];
+    [globalCachedRooms setObject:newRoom forKey:newRoom.roomid];
+    
     [createdRoom saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (error) {
-            NSLog(@"Error creating room %@; %@", createdRoom, error);
-            [createdRoom unpinInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
-            }];
-        } else {
-             [self registerForPushForRoom:newRoom];
+            NSLog(@"Error creating room \"%@\"; couldnt save; %@", createdRoom, error);
+            [self tagError:@"createRoom" withError:error];
+            [globalCachedRooms removeObjectForKey:newRoom.roomid];
+            [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
+            return;
+            
         }
+        [globalCachedRooms removeObjectForKey:newRoom.roomid];
         
-        [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
+        newRoom.roomid = createdRoom.objectId;
+        newRoom.createdAt = createdRoom.createdAt;
+        
+        [globalCachedRooms setObject:newRoom forKey:newRoom.roomid];
+        
+        [self registerForPushForRoom:newRoom];
+        [createdRoom pinInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (error) {
+                NSLog(@"Error creating room \"%@\"; couldnt pin; %@", createdRoom, error);
+                [self tagError:@"createRoom" withError:error];
+                [self getsubscribedRoomsWithCompletionBlock:nil];
+            }
+            [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
+        }];
     }];
 }
 
@@ -172,21 +192,43 @@
     PFObject *newPost = [self convertToPFObjectFromMoment:moment];
     newPost[@"room"] = room;
     newPost[@"createdBy"] = user;
+    newPost[@"roomId"] = roomObject.roomid;
     
-    [newPost pinInBackground];
+    moment.postid = [NSString stringWithFormat:@"%@_%@", @"@temp", [NSDate date]];
+    moment.dateCreated = [NSDate date];
+    moment.roomId = roomObject.roomid;
+    
+    [globalCachedMoments setObject:moment forKey:moment.postid];
+    [roomObject addMoments:@[moment]];
+    [self generateRecentMoments];
+    
     [newPost saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-        if (succeeded) {
-            moment.postid = [newPost objectId];
-            moment.dateLastChanged = [newPost updatedAt];
-            moment.dateCreated = [newPost createdAt];
-            //NSLog(@"%@", moment);
-        } else {
-            [newPost unpinInBackground];
-            NSLog(@"couldnt upload moment because %@", error);
+        if (error) {
+            [newPost saveEventually];
+            NSLog(@"Error adding moment; couldnt upload moment; %@", error);
+            [self tagError:@"addMoment" withError:error];
+            [roomObject.moments removeObject:moment];
+            [globalCachedMoments removeObjectForKey:moment.postid];
+            [self generateRecentMoments];
+            return;
         }
+        
+        [globalCachedMoments removeObjectForKey:moment.postid];
+        moment.postid = [newPost objectId];
+        [globalCachedMoments setObject:moment forKey:moment.postid];
+        
+        moment.dateLastChanged = [newPost updatedAt];
+        moment.dateCreated = [newPost createdAt];
+        
+        [newPost pinInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (error) {
+                NSLog(@"Error adding moment; couldnt pin moment; %@", error);
+                [self tagError:@"addMoment" withError:error];
+                [self getMomentsForSubscribedRoomsWithCompletionBlock:nil];
+                return;
+            }
+        }];
     }];
-    
-    [roomObject addMoments:[NSArray arrayWithObject:moment]];
 }
 
 #pragma mark Convert between Moments/Parse
@@ -227,10 +269,9 @@
 
 - (Moment*)convertToMomentFromPFObject:(PFObject*)post
 {
-    for (Moment *aCachedMoment in loadedMoments) {
-        if ([aCachedMoment.postid isEqualToString:post.objectId]) {
-            return aCachedMoment;
-        }
+    Moment *aCachedMoment = [globalCachedMoments objectForKey:post.objectId];
+    if (aCachedMoment) {
+        return aCachedMoment;
     }
     
     Moment *newMoment = [[Moment alloc] init];
@@ -281,25 +322,38 @@
         }
     }
     
-    int i=0;
-    for (i=0; i<loadedMoments.count; i++) {
-        Moment *cachedMoment = loadedMoments[i];
-        if ([newMoment.dateCreated compare:cachedMoment.dateCreated] == NSOrderedDescending) {
+    [self cacheMoment:newMoment];
+    return newMoment;
+}
+
+- (Moment*)cacheMoment:(Moment*)theMomentToCache
+{
+    if ([globalCachedMoments objectForKey:theMomentToCache.postid]) {
+        //should we check for changes?
+        //TODO
+        return [globalCachedMoments objectForKey:theMomentToCache.postid];
+    }
+    
+    [globalCachedMoments setObject:theMomentToCache forKey:theMomentToCache.postid];
+    
+    for (int i=0; i<MIN(self.mostRecentMoments.count, 5); i++) {
+        Moment *aRecentMoment = self.mostRecentMoments[i];
+        if ([theMomentToCache.dateCreated compare:aRecentMoment.dateCreated] == NSOrderedDescending) {
+            NSMutableArray *recentMoments = [self mutableArrayValueForKey:@"mostRecentMoments"];
+            [recentMoments insertObject:theMomentToCache atIndex:i];
+            if (recentMoments.count > 5) {
+                [recentMoments removeLastObject];
+            }
             break;
         }
     }
-    [loadedMoments insertObject:newMoment atIndex:i];
     
-    if (i < 5) {
+    if (self.mostRecentMoments.count == 0) {
         NSMutableArray *recentMoments = [self mutableArrayValueForKey:@"mostRecentMoments"];
-        [recentMoments insertObject:newMoment atIndex:i];
-        if (recentMoments.count >= 5) {
-            [recentMoments removeLastObject];
-        }
+        [recentMoments insertObject:theMomentToCache atIndex:0];
     }
     
-
-    return newMoment;
+    return theMomentToCache;
 }
 
 //consumption
@@ -345,21 +399,21 @@
     }];
 }
 
-- (NSMutableArray*)processMomentsFromParse:(NSArray*)moments
+- (NSMutableArray*)processMomentsFromParse:(NSArray*)listOfNewParseMoments
 {
     NSMutableArray *momentsArray = [NSMutableArray array];
-    for (int i=0; i<moments.count; i++) {
-        PFObject *object = moments[i];
+    
+    for (int i=0; i<listOfNewParseMoments.count; i++) {
+        PFObject *object = listOfNewParseMoments[i];
         Moment *newMoment = [self convertToMomentFromPFObject:object];
-        for (MomentRoom *aroom in self.subscribedRooms) {
-            if ([aroom.roomid isEqualToString:newMoment.roomId]) {
-                [aroom addMoments:[NSArray arrayWithObject:newMoment]];
-            }
+        
+        MomentRoom *potentialRoom = [globalCachedRooms objectForKey:newMoment.roomId];
+        if (potentialRoom) {
+            [potentialRoom addMoments:@[newMoment]];
         }
-        [momentsArray insertObject:newMoment atIndex:i];
+        [momentsArray addObject:newMoment];
     }
     
-    NSLog(@"proccessing %ld moments, of those %ld were new", (unsigned long)moments.count, (unsigned long)momentsArray.count);
     return momentsArray;
 }
 
@@ -444,6 +498,52 @@
     return moments;
 }
 
+- (void)removeMomentsForRoom:(MomentRoom*)room
+{
+    PFObject *parseRoom = [self convertToPFObjectFromMomentRoom:room];
+    
+    for (Moment *oldMoment in room.moments) {
+        [globalCachedMoments removeObjectForKey:oldMoment.postid];
+    }
+    
+    PFQuery *momentsQuery = [PFQuery queryWithClassName:@"Post"];
+    [[momentsQuery fromLocalDatastore] ignoreACLs];
+    [momentsQuery whereKey:@"room" equalTo:parseRoom];
+    [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error){
+        if (error) {
+            NSLog(@"Error removing moments from room; error getting moments; %@", error);
+            [self tagError:@"removeMomentsForRoom" withError:error];
+            return;
+        }
+        
+        [PFObject unpinAllInBackground:objects block:^(BOOL succeeded, NSError *PF_NULLABLE_S error){
+            if (error) {
+                NSLog(@"Error removing moments from room; error unpinning moments; %@", error);
+                [self tagError:@"removeMomentsForRoom" withError:error];
+                return;
+            }
+        }];
+    }];
+    
+    [self generateRecentMoments];
+}
+
+- (void)generateRecentMoments
+{
+    NSMutableArray *allMoments = [[globalCachedMoments allValues] mutableCopy];
+    if (allMoments.count == 0) {
+        return;
+    }
+            
+    [allMoments sortUsingComparator:^NSComparisonResult(Moment *obj1, Moment *obj2) {
+        return [obj2.dateCreated compare:obj1.dateCreated];
+    }];
+    NSRange deleteRange = {MIN(allMoments.count-1, 5), ((allMoments.count-5.0) >= 0) ? (allMoments.count-5.0)  : 0};
+    [allMoments removeObjectsInRange:deleteRange];
+    
+    self.mostRecentMoments = allMoments;
+}
+
 #pragma mark Convert MomentRoom/Parse
 
 -(BOOL)MomentRoomIsValid:(MomentRoom*)room
@@ -502,6 +602,7 @@
     newRoom.roomLifetime = [room[@"expirationTime"] floatValue];
     newRoom.backgroundColor = [UIColor colorWithString:room[@"backgroundColor"]];
     newRoom.isSubscribed = [self isRegisteredForPushForRoom:newRoom];
+    newRoom.createdAt = room.createdAt;
     
     [self getUsersForRoom:newRoom withCompletionBlock:^(NSArray *membersOfRoom) {
         newRoom.members = membersOfRoom;
@@ -519,40 +620,31 @@
     
     PFQuery *roleQuery = [PFRole query];
     [roleQuery whereKey:@"users" equalTo:[PFUser currentUser]];
-    [roleQuery findObjectsInBackgroundWithBlock:^(NSArray *roles, NSError *error){
-        if (error) {
-            NSLog(@"Error getting roles with %@", error);
-            return;
-        }
-        [PFObject pinAllInBackground:roles];
-        NSMutableArray *rooms = [NSMutableArray array];
-        for (PFRole *role in roles) {
-            [rooms addObject:role.name];
-        }
-        PFQuery *roomQuery = [PFQuery queryWithClassName:@"Room"];
-        [roomQuery whereKey:@"objectId" containedIn:rooms];
-        [roomQuery findObjectsInBackgroundWithBlock:^(NSArray *rooms, NSError *error){
-            if (!error) {
-                NSString *nameOfObjectPin = @"subscribedRooms";
-                [PFObject unpinAllObjectsInBackgroundWithName:nameOfObjectPin];
-                NSMutableArray *momentRooms = [NSMutableArray array];
-                for (PFObject *room in rooms) {
-                    NSLog(@"%@ called %@", room.objectId, room[@"name"]);
-                    MomentRoom *aNewRoom = [self convertToMomentRoomFromPFObject:room];
-                    if (aNewRoom) {
-                        [momentRooms addObject:aNewRoom];
-                    }
+    [roleQuery includeKey:@"name"];
+    
+    PFQuery *roomQuery = [PFQuery queryWithClassName:@"Room"];
+    [roomQuery whereKey:@"objectId" matchesKey:@"name" inQuery:roleQuery];
+    [roomQuery findObjectsInBackgroundWithBlock:^(NSArray *rooms, NSError *error){
+        if (!error) {
+            NSString *nameOfObjectPin = @"subscribedRooms";
+            [PFObject unpinAllObjectsInBackgroundWithName:nameOfObjectPin];
+            NSMutableArray *momentRooms = [NSMutableArray array];
+            for (PFObject *room in rooms) {
+                NSLog(@"%@ called %@", room.objectId, room[@"name"]);
+                MomentRoom *aNewRoom = [self convertToMomentRoomFromPFObject:room];
+                if (aNewRoom) {
+                    [momentRooms addObject:aNewRoom];
                 }
-                [PFObject pinAllInBackground:rooms withName:nameOfObjectPin block:^(BOOL succeeded, NSError *PF_NULLABLE_S error){
-                    [self loadCachedsubscribedRoomsWithCompletionBlock:^(NSArray *rooms) {
-                        if (completionBlock) {
-                            completionBlock(momentRooms);
-                        }
-                    }];
-                    
-                }];
             }
-        }];
+            [PFObject pinAllInBackground:rooms withName:nameOfObjectPin block:^(BOOL succeeded, NSError *PF_NULLABLE_S error){
+                [self loadCachedsubscribedRoomsWithCompletionBlock:^(NSArray *rooms) {
+                    if (completionBlock) {
+                        completionBlock(momentRooms);
+                    }
+                }];
+                
+            }];
+        }
     }];
 }
 
@@ -560,58 +652,97 @@
 {
     PFQuery *query = [PFQuery queryWithClassName:@"Room"];
     [[query fromLocalDatastore] ignoreACLs];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *cachedRooms, NSError *error){
+    [query orderByAscending:@"createdAt"];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *fetchedCachedRooms, NSError *error){
         if (error) {
             NSLog(@"error getting cached rooms, %@", error);
             return;
         }
         
-        NSMutableArray *rooms = [NSMutableArray array];
-        for (PFObject *aRoom in cachedRooms) {
-            BOOL roomIsCached = NO;
-            MomentRoom *newRoom = [self convertToMomentRoomFromPFObject:aRoom];
-            if (self.subscribedRooms) {
-                for (MomentRoom *room in self.subscribedRooms) {
-                    if ([room.roomid isEqualToString:aRoom.objectId]) {
-                        roomIsCached = YES;
-                        //change room details
-                        if ([room.roomName isEqualToString:newRoom.roomName] == NO) {
-                            room.roomName = newRoom.roomName;
-                        }
-                        if (room.roomLifetime != newRoom.roomLifetime) {
-                            room.roomLifetime = newRoom.roomLifetime;
-                        }
-                        //should the background be changable
-                        if ([room.backgroundColor isEquivalentToColor:newRoom.backgroundColor] == NO) {
-                            room.backgroundColor = newRoom.backgroundColor;
-                        }
-                        continue;
-                    }
-                }
-                
-            }
-            if (roomIsCached == NO) {
-                [rooms addObject:newRoom];
-            }
+        NSMutableArray *allCachedRooms = [NSMutableArray array];
+        for (PFObject *aRoom in fetchedCachedRooms) {
+            MomentRoom *newlyCreatedRoom = [self convertToMomentRoomFromPFObject:aRoom];
+            MomentRoom *cachedRoom = [self cacheMomentRoom:newlyCreatedRoom];
+            [self addMomentRoomToSubscribedList:cachedRoom];
+            [allCachedRooms addObject:cachedRoom];
         }
         
-        if (self.subscribedRooms == nil) {
-            self.subscribedRooms = [NSMutableArray array];
+        NSMutableArray *deletedRooms = [self.subscribedRooms mutableCopy];
+        [deletedRooms removeObjectsInArray:allCachedRooms];
+        if (deletedRooms.count > 0) {
+            NSMutableArray *subscribedRooms = [self mutableArrayValueForKey:@"subscribedRooms"];
+            [subscribedRooms removeObjectsInArray:deletedRooms];
         }
         
-        NSMutableArray *theseMoments = [self mutableArrayValueForKey:@"subscribedRooms"];
-        [theseMoments addObjectsFromArray:rooms];
+        
         if (completionBlock) {
-            completionBlock(rooms);
+            completionBlock(allCachedRooms);
         }
     }];
+}
+
+- (MomentRoom*)cacheMomentRoom:(MomentRoom*)aPotentiallyNewRoom
+{
+    BOOL roomWasAlreadyCached = NO;
     
+    if ([globalCachedRooms objectForKey:aPotentiallyNewRoom.roomid]) {
+        MomentRoom *previouslyCachedRoom = [globalCachedRooms objectForKey:aPotentiallyNewRoom.roomid];
+        if ([aPotentiallyNewRoom.roomid isEqualToString:previouslyCachedRoom.roomid]) {
+            roomWasAlreadyCached = YES;
+            //change room details
+            if ([aPotentiallyNewRoom.roomName isEqualToString:previouslyCachedRoom.roomName] == NO) {
+                previouslyCachedRoom.roomName = aPotentiallyNewRoom.roomName;
+            }
+            if (aPotentiallyNewRoom.roomLifetime != previouslyCachedRoom.roomLifetime) {
+                previouslyCachedRoom.roomLifetime = aPotentiallyNewRoom.roomLifetime;
+            }
+            
+            previouslyCachedRoom.isSubscribed = aPotentiallyNewRoom.isSubscribed;
+            previouslyCachedRoom.allowsPosting = aPotentiallyNewRoom.allowsPosting;
+            [previouslyCachedRoom addMoments:aPotentiallyNewRoom.moments];
+            
+            //should the background be changable
+            if ([aPotentiallyNewRoom.backgroundColor isEquivalentToColor:previouslyCachedRoom.backgroundColor] == NO) {
+                previouslyCachedRoom.backgroundColor = aPotentiallyNewRoom.backgroundColor;
+            }
+            
+            roomWasAlreadyCached = YES;
+            return previouslyCachedRoom;
+        }
+    }
     
+    if (roomWasAlreadyCached == NO) {
+        //cache the room
+        [globalCachedRooms setObject:aPotentiallyNewRoom forKey:aPotentiallyNewRoom.roomid];
+    }
+    
+    return aPotentiallyNewRoom;
+}
+
+- (void)addMomentRoomToSubscribedList:(MomentRoom*)theRoom
+{
+    for (MomentRoom *alreadyListedRoom in self.subscribedRooms) {
+        //dont list it twice
+        if ([alreadyListedRoom.roomid isEqualToString:theRoom.roomid]) {
+            return;
+        }
+    }
+    
+    int i=0;
+    for (i=0; i<self.subscribedRooms.count; i++) {
+        MomentRoom *aCachedRoom = self.subscribedRooms[i];
+        if ([aCachedRoom.createdAt compare:theRoom.createdAt] == NSOrderedAscending) {
+            break;
+        }
+    }
+    
+    NSMutableArray *subscribedRooms = [self mutableArrayValueForKey:@"subscribedRooms"];
+    [subscribedRooms insertObject:theRoom atIndex:i];
 }
 
 - (NSArray*)cachedSubscribedRooms
 {
-    if (self.subscribedRooms == nil) {
+    if (self.subscribedRooms.count == 0) {
         [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
     }
     return self.subscribedRooms;
@@ -619,13 +750,21 @@
 
 - (MomentRoom*)getCachedRoomWithID:(NSString*)roomID
 {
+    if (roomID == nil) {
+        return nil;
+    }
+    MomentRoom *potentialRoom = [globalCachedRooms objectForKey:roomID];
+    if (potentialRoom) {
+        return potentialRoom;
+    }
+    
     PFQuery *query = [PFQuery queryWithClassName:@"Room"];
     [[query fromLocalDatastore] ignoreACLs];
     [query whereKey:@"objectId" equalTo:roomID];
     PFObject *object = [query getFirstObject];
     
-    MomentRoom *room = [self convertToMomentRoomFromPFObject:object];
-    return room;
+    potentialRoom = [self convertToMomentRoomFromPFObject:object];
+    return potentialRoom;
 }
 
 #pragma mark Room subscription
@@ -638,27 +777,30 @@
     PFQuery *roleQuery = [PFRole query];
     [roleQuery whereKey:@"name" equalTo:roomID];
     [roleQuery getFirstObjectInBackgroundWithBlock:^(PFObject *roleObject,  NSError *error){
-        if (!error) {
-            PFRole *role = (PFRole*)roleObject;
-            [role.users addObject:[PFUser currentUser]];
-            [role saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                if (succeeded) {
-                    [self getsubscribedRoomsWithCompletionBlock:^(NSArray *rooms) {
-                        for (MomentRoom *aRoom in rooms) {
-                            if ([aRoom.roomid isEqualToString:roomID]) {
-                                //verified we have the room
-                                [self getMomentsForRoom:aRoom WithCompletionBlock:nil];
-                                [self registerForPushForRoom:aRoom];
-                                if (completionBlock) {
-                                    completionBlock(aRoom);
-                                }
-                            }
-                        }
-                        
-                    }];
+        if (error) {
+            NSLog(@"Error subscribing; Error getting role for room; %@", error);
+            [self tagError:@"subscribe" withError:error];
+            return;
+        }
+        
+        PFRole *role = (PFRole*)roleObject;
+        [role.users addObject:[PFUser currentUser]];
+        [role saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (error) {
+                NSLog(@"Error subscribing; Error saving role; %@", error);
+                [self tagError:@"subscribe" withError:error];
+                return;
+            }
+            
+            [self getsubscribedRoomsWithCompletionBlock:^(NSArray *rooms) {
+                MomentRoom *aRoom = [globalCachedRooms objectForKey:roomID];
+                [self getMomentsForRoom:aRoom WithCompletionBlock:nil];
+                [self registerForPushForRoom:aRoom];
+                if (completionBlock) {
+                    completionBlock(aRoom);
                 }
             }];
-        }
+        }];
     }];
 }
 
@@ -668,30 +810,47 @@
         return;
     }
     
+    //let us assume this will work out
+    [self removeMomentsForRoom:room];
+    [self unregisterForPushForRoom:room];
+    [globalCachedRooms removeObjectForKey:room.roomid];
+    NSMutableArray *subscribedRooms = [self mutableArrayValueForKey:@"subscribedRooms"];
+    [subscribedRooms removeObject:room];
+    
+    //now do it for real
+    PFObject *roomObject = [self convertToPFObjectFromMomentRoom:room];
+    [PFObject unpinAllInBackground:@[roomObject] block:^(BOOL succeeded, NSError *error){
+        if(error) {
+            NSLog(@"Error unsubscribing; Error unpinning room; %@", error);
+            [self tagError:@"unSubscribeFromRoom" withError:error];
+            return;
+        }
+    }];
+    
     PFQuery *roleQuery = [PFRole query];
     [roleQuery whereKey:@"name" equalTo:room.roomid];
     [roleQuery getFirstObjectInBackgroundWithBlock:^(PFObject *roleObject,  NSError *error){
-        if (!error) {
-            PFRole *role = (PFRole*)roleObject;
-            [role.users removeObject:[PFUser currentUser]];
-            [role saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
-                if (succeeded) {
-                    [self unregisterForPushForRoom:room];
-                    PFObject *roomObject = [PFObject objectWithoutDataWithObjectId:room.roomid];
-                    [PFObject unpinAllInBackground:@[roomObject] block:^(BOOL succeeded, NSError *error){
-                        if(error) {
-                            NSLog(@"error unpinng unsubscribed room: %@", error);
-                        }
-                        
-                        [self loadCachedsubscribedRoomsWithCompletionBlock:^(NSArray *currentRoom) {
-                            if (completionBlock) {
-                                completionBlock();
-                            }
-                        }];
-                    }];
-                }
-            }];
+        if (error) {
+            NSLog(@"Error unsubscribing; Error getting role for room; %@", error);
+            [self tagError:@"unSubscribeFromRoom" withError:error];
+            [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
+            return;
         }
+        
+        PFRole *role = (PFRole*)roleObject;
+        [role.users removeObject:[PFUser currentUser]];
+        [role saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+            if (error) {
+                NSLog(@"Error unsubscribing; Error removing user from role; %@", error);
+                [self tagError:@"unSubscribeFromRoom" withError:error];
+                [self getsubscribedRoomsWithCompletionBlock:nil];
+                return;
+            }
+            
+            if (completionBlock) {
+                completionBlock();
+            }
+        }];
     }];
 }
 
@@ -722,7 +881,7 @@
             NSLog(@"Error getting room role; %@", error);
             return;
         }
-        [PFObject pinAllInBackground:@[object]];
+        [PFObject pinAllInBackground:@[object] withName:@"role"];
         PFRole *roomsRole = (PFRole*)object;
         PFRelation *users = roomsRole.users;
         PFQuery *userQuery = users.query;
@@ -732,7 +891,7 @@
                 return;
             }
             NSMutableArray *usersInRoom = [NSMutableArray array];
-            [PFObject pinAllInBackground:users];
+            [PFObject pinAllInBackground:users withName:@"user"];
             for (PFUser *aUser in users) {
                 MomentUser *aMomentUser = [self convertPFUserToMomentUser:aUser];
                 [usersInRoom addObject:aMomentUser];
@@ -823,7 +982,38 @@
     return NO;
 }
 
+#pragma mark Analytics
+
+- (void)tagEvent:(NSString *)event withInformation:(NSDictionary *)info
+{
+    if (info) {
+        [PFAnalytics trackEventInBackground:event dimensions:info block:nil];
+    } else {
+        [PFAnalytics trackEventInBackground:event block:nil];
+    }
+}
+
+- (void)tagError:(NSString*)errorEvent withError:(NSError*)error
+{
+    [self tagEvent:@"error" withInformation:[NSDictionary dictionaryWithObjectsAndKeys:error, @"error", errorEvent, @"event", nil]];
+}
+         
+
 #pragma mark Utilties
+
+- (void)deleteExpiredMoments
+{
+    PFQuery *momentsQuery = [PFQuery queryWithClassName:@"Post"];
+    [momentsQuery whereKey:@"expiresAt" lessThan:[NSDate date]];
+    [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *expiredMoments, NSError *error){
+        for (PFObject *anExpiredMoment in expiredMoments) {
+            //delete its file
+            
+        }
+        [PFObject unpinAllInBackground:expiredMoments];
+    }];
+}
+
 NSString *letters = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*?<>";
 - (NSString *)randomStringWithLength:(int)len
 {
