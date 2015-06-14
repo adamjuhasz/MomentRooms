@@ -137,6 +137,7 @@
 - (void)tapping:(UITapGestureRecognizer*)recognizer
 {
     [self maximizeRoom:(RoomPlate*)recognizer.view];
+    [[MomentsCloud sharedCloud] tagEvent:@"Maximize Room" withInformation:[NSDictionary dictionaryWithObjectsAndKeys:@"tap", @"source", nil]];
 }
 
 - (void)panning:(UIPanGestureRecognizer*)recognizer
@@ -154,6 +155,7 @@
             if (fabs(velocity.y) > 20) {
                 //negative velocuty is moving towards top of screen
                 if (velocity.y < 0) {
+                    [[MomentsCloud sharedCloud] tagEvent:@"Maximize Room" withInformation:[NSDictionary dictionaryWithObjectsAndKeys:@"gesture", @"source", nil]];
                     [self maximizeRoom:(RoomPlate*)recognizer.view];
                 } else {
                     recognizer.view.center = centerLocation;
@@ -193,7 +195,6 @@
             break;
             
         default:
-            NSLog(@"other");
             break;
     }
     
@@ -319,6 +320,8 @@
     
     [addButton removeFromSuperview];
     selectedRoom = nil;
+    
+    [[MomentsCloud sharedCloud] tagEvent:@"Minimize Room" withInformation:nil];
 }
 
 - (void)newMoment

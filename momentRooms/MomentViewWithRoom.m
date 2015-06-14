@@ -62,6 +62,7 @@
 {
     if (myRoom) {
         [self.delegate openRoom:myRoom];
+        [[MomentsCloud sharedCloud] tagEvent:@"Maximize Room" withInformation:[NSDictionary dictionaryWithObjectsAndKeys:@"roomTap", @"source", nil]];
     }
 }
 

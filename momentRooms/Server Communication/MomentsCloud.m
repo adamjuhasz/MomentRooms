@@ -172,6 +172,8 @@
             [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
         }];
     }];
+    
+    [self tagEvent:@"createRoom" withInformation:nil];
 }
 
 - (void)addMoment:(Moment*)moment ToRoom:(MomentRoom*)roomObject
@@ -229,6 +231,8 @@
             }
         }];
     }];
+    
+    [self tagEvent:@"addMoment" withInformation:nil];
 }
 
 #pragma mark Convert between Moments/Parse
@@ -697,7 +701,6 @@
                 previouslyCachedRoom.roomLifetime = aPotentiallyNewRoom.roomLifetime;
             }
             
-            previouslyCachedRoom.isSubscribed = aPotentiallyNewRoom.isSubscribed;
             previouslyCachedRoom.allowsPosting = aPotentiallyNewRoom.allowsPosting;
             [previouslyCachedRoom addMoments:aPotentiallyNewRoom.moments];
             
@@ -928,8 +931,8 @@
     currentInstallation[@"user"] = [PFUser currentUser];
     [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (error) {
-            NSLog(@"Couldn't save device token: %@", error);
-            [currentInstallation saveEventually];
+            NSLog(@"Error storePushDeviceToken; Couldn't save PFInstallation: %@", error);
+            [self tagError:@"storePushDeviceToken" withError:error];
             return;
         }
     }];
@@ -944,13 +947,14 @@
     [currentInstallation addUniqueObject:[self generateChannelName:room] forKey:@"channels"];
     [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (error) {
-            NSLog(@"Couldn't register for push: %@", error);
-            [currentInstallation saveEventually];
-            
+            NSLog(@"Error registerForPushForRoom; Couldn't save PFInstallation; %@", error);
+            [self tagError:@"registerForPushForRoom" withError:error];
             room.isSubscribed = NO;
             return;
         }
     }];
+    
+    [self tagEvent:@"registerForPushForRoom" withInformation:nil];
 }
 
 - (void)unregisterForPushForRoom:(MomentRoom*)room
@@ -961,13 +965,14 @@
     [currentInstallation removeObject:[self generateChannelName:room] forKey:@"channels"];
     [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (error) {
-            NSLog(@"Couldn't unregister for push: %@", error);
-            [currentInstallation saveEventually];
-            
+            NSLog(@"Error unregisterForPushForRoom; Couldn't save PFInstallation; %@", error);
+            [self tagError:@"unregisterForPushForRoom" withError:error];
             room.isSubscribed = YES;
             return;
         }
     }];
+    
+    [self tagEvent:@"registerForPushForRoom" withInformation:nil];
 }
 
 - (BOOL)isRegisteredForPushForRoom:(MomentRoom*)room
