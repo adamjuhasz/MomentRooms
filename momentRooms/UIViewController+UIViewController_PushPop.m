@@ -60,6 +60,12 @@
         return;
     }
     
+    UIViewController *nextViewController = nil;
+    if (index > 0) {
+        nextViewController = [self.childViewControllers objectAtIndex:(index-1)];
+        [nextViewController viewWillAppear:YES];
+    }
+    
     CGRect exitFrame = CGRectMake(self.view.bounds.size.width, 0, self.view.bounds.size.width, self.view.bounds.size.height);
     
     switch (direction) {
@@ -81,6 +87,7 @@
     animation.toValue = [NSValue valueWithCGRect:exitFrame];
     animation.completionBlock = ^(POPAnimation *anim, BOOL finished) {
         [self removeController:controller];
+        [nextViewController viewDidAppear:YES];
         if(success) {
             success();
         }
