@@ -80,12 +80,11 @@
     hiddenComponents = @[addPhoto,usernameField,line, save, addPhoto];
     firstComponents = @[startButton, explanation];
     
-    /*
     for (UIView *view in hiddenComponents) {
         save.hidden = YES;
         line.hidden = YES;
         usernameField.hidden = YES;
-    }*/
+    }
     
     RACSignal *validUsernameSignal = [usernameField.rac_textSignal
      map:^id(NSString *text) {
@@ -112,11 +111,12 @@
 - (void)save
 {
     PFUser *current = [PFUser currentUser];
-    
+    if (current)
     current[@"nickname"] =  usernameField.text;
     current[@"isNewDigitUser"] = @(NO);
-    [current saveEventually];
+    [current save];
     
+    [[MomentsCloud sharedCloud] setLoggedIn:YES];
     [self.parentViewController popController:self withSuccess:nil];
 }
 
@@ -132,6 +132,7 @@
     [PFUser loginWithDigitsInBackground:^(PFUser *user, NSError *error) {
         if(!error){
             // do something with user
+            [user save];
             PFUser *current = [PFUser currentUser];
             if ([current[@"isNewDigitUser"] boolValue] == YES) {
                 for (UIView *view in hiddenComponents) {
@@ -142,9 +143,9 @@
                 }
                 [usernameField becomeFirstResponder];
             } else {
+                [[MomentsCloud sharedCloud] setLoggedIn:YES];
                 [self.parentViewController popController:self withSuccess:nil];
             }
-            [[MomentsCloud sharedCloud] setLoggedIn:YES];
         }
     }];
 }

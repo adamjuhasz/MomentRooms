@@ -42,6 +42,7 @@
         self.subscribedRooms = [NSMutableArray array];
         globalCachedMoments = [NSMutableDictionary dictionary];
         globalCachedRooms = [NSMutableDictionary dictionary];
+        self.loggedIn = NO;
         
         @weakify(self);
         [RACObserve(self, loggedIn) subscribeNext:^(NSNumber *isLoggedIn) {
@@ -615,6 +616,9 @@
     newRoom.backgroundColor = [UIColor colorWithString:room[@"backgroundColor"]];
     newRoom.isSubscribed = [self isRegisteredForPushForRoom:newRoom];
     newRoom.createdAt = room.createdAt;
+    if (room[@"allowsPosting"]) {
+        newRoom.allowsPosting = [room[@"allowsPosting"] boolValue];
+    }
     
     [self getUsersForRoom:newRoom withCompletionBlock:^(NSArray *membersOfRoom) {
         newRoom.members = membersOfRoom;
@@ -937,7 +941,9 @@
     // Store the deviceToken in the current Installation and save it to Parse
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
-    currentInstallation[@"user"] = [PFUser currentUser];
+    if ([PFUser currentUser]) {
+        currentInstallation[@"user"] = [PFUser currentUser];
+    }
     [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (error) {
             NSLog(@"Error storePushDeviceToken; Couldn't save PFInstallation: %@", error);
