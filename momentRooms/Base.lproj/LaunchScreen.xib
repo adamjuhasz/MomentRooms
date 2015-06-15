@@ -8,32 +8,71 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB">
-            <rect key="frame" x="0.0" y="0.0" width="438" height="591"/>
+            <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CLT-7v-u3W">
-                    <rect key="frame" x="0.0" y="0.0" width="438" height="438"/>
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="414"/>
                     <color key="backgroundColor" red="0.89965691137566139" green="0.89965691137566139" blue="0.89965691137566139" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="CLT-7v-u3W" secondAttribute="height" multiplier="1:1" id="CNb-jj-cjH"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vCG-L8-c1A" userLabel="first">
+                    <rect key="frame" x="3" y="417" width="178.5" height="316"/>
+                    <color key="backgroundColor" red="0.87450980392156863" green="0.87450980392156863" blue="0.87450980392156863" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="vCG-L8-c1A" secondAttribute="height" multiplier="9:16" id="IYz-Gg-jG9"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EwQ-I0-DqX" userLabel="second">
+                    <rect key="frame" x="184.5" y="417" width="178" height="316"/>
+                    <color key="backgroundColor" red="0.87450980389999999" green="0.87450980389999999" blue="0.87450980389999999" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="EwQ-I0-DqX" secondAttribute="height" multiplier="9:16" id="gP2-tR-yi4"/>
+                    </constraints>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KJK-U6-nyx" userLabel="third">
+                    <rect key="frame" x="365.5" y="417" width="178" height="316"/>
+                    <color key="backgroundColor" red="0.87450980389999999" green="0.87450980389999999" blue="0.87450980389999999" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="KJK-U6-nyx" secondAttribute="height" multiplier="9:16" id="ymB-r5-aaE"/>
                     </constraints>
                 </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="CLT-7v-u3W" secondAttribute="trailing" id="23J-f5-CEd"/>
+                <constraint firstItem="EwQ-I0-DqX" firstAttribute="top" secondItem="CLT-7v-u3W" secondAttribute="bottom" constant="3" id="6gM-T0-upO"/>
+                <constraint firstItem="KJK-U6-nyx" firstAttribute="left" secondItem="EwQ-I0-DqX" secondAttribute="right" constant="3" id="7PX-cA-o3L"/>
                 <constraint firstItem="CLT-7v-u3W" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="9kd-Od-5Uv"/>
+                <constraint firstItem="EwQ-I0-DqX" firstAttribute="centerY" secondItem="vCG-L8-c1A" secondAttribute="centerY" id="9mg-OB-5ws"/>
                 <constraint firstItem="CLT-7v-u3W" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="DGM-iN-4Nb"/>
+                <constraint firstItem="EwQ-I0-DqX" firstAttribute="height" secondItem="vCG-L8-c1A" secondAttribute="height" id="JZQ-j8-xEG"/>
                 <constraint firstAttribute="centerX" secondItem="CLT-7v-u3W" secondAttribute="centerX" id="KTl-8d-Und"/>
+                <constraint firstItem="KJK-U6-nyx" firstAttribute="width" secondItem="KJK-U6-nyx" secondAttribute="height" multiplier="9:16" id="MfO-JR-8tD"/>
+                <constraint firstAttribute="bottom" secondItem="EwQ-I0-DqX" secondAttribute="bottom" constant="3" id="QCI-zZ-EYR"/>
+                <constraint firstItem="EwQ-I0-DqX" firstAttribute="height" secondItem="KJK-U6-nyx" secondAttribute="height" id="Whv-69-YYW"/>
+                <constraint firstItem="vCG-L8-c1A" firstAttribute="right" secondItem="EwQ-I0-DqX" secondAttribute="left" constant="-3" id="b08-cP-lm9"/>
+                <constraint firstItem="vCG-L8-c1A" firstAttribute="top" secondItem="CLT-7v-u3W" secondAttribute="bottom" constant="3" id="bEq-8e-LEe"/>
+                <constraint firstItem="EwQ-I0-DqX" firstAttribute="width" secondItem="KJK-U6-nyx" secondAttribute="width" id="egJ-KB-idS"/>
+                <constraint firstItem="EwQ-I0-DqX" firstAttribute="centerY" secondItem="KJK-U6-nyx" secondAttribute="centerY" id="fI0-Mm-zKJ"/>
+                <constraint firstItem="EwQ-I0-DqX" firstAttribute="width" secondItem="vCG-L8-c1A" secondAttribute="width" id="gjx-HK-gqS"/>
+                <constraint firstItem="EwQ-I0-DqX" firstAttribute="width" secondItem="EwQ-I0-DqX" secondAttribute="height" multiplier="9:16" id="hI5-6K-6Hf"/>
+                <constraint firstItem="KJK-U6-nyx" firstAttribute="width" secondItem="KJK-U6-nyx" secondAttribute="height" multiplier="9:16" id="pZx-ep-5BQ"/>
+                <constraint firstItem="vCG-L8-c1A" firstAttribute="left" secondItem="iN0-l3-epB" secondAttribute="left" constant="3" id="wwj-tB-iqU"/>
+                <constraint firstAttribute="bottom" secondItem="vCG-L8-c1A" secondAttribute="bottom" constant="3" id="ySz-FY-8oa"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
-            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
             <variation key="default">
                 <mask key="constraints">
                     <exclude reference="KTl-8d-Und"/>
+                    <exclude reference="6gM-T0-upO"/>
+                    <exclude reference="QCI-zZ-EYR"/>
                 </mask>
             </variation>
-            <point key="canvasLocation" x="527" y="510.5"/>
+            <point key="canvasLocation" x="527" y="510"/>
         </view>
     </objects>
 </document>

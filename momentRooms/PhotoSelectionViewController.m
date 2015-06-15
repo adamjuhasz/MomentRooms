@@ -47,6 +47,19 @@
     
     RAC(self,thumbnailOfSelectedImage) = RACObserve(cameraPreview, thumbnail);
     RAC(self,selectedImage) = RACObserve(cameraPreview, fullsizeImag);
+ 
+    [[RACObserve(self, thumbnailOfSelectedImage) filter:^BOOL(id value) {
+        return (value != nil);
+    }] subscribeNext:^(id x) {
+        self.view.userInteractionEnabled = NO;
+    }];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.view.userInteractionEnabled = YES;
 }
 
 - (void)goBack

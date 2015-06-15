@@ -38,6 +38,7 @@ PODS:
   - ReactiveTableViewBinding (1.0):
     - ReactiveCocoa (~> 2.4)
   - TGPControls (1.0.0)
+  - Tweaks (2.0.0)
   - UICKeyChainStore (2.0.4)
   - UIColor+ContrastingColor (0.0.1)
   - VBFPopFlatButton (0.0.6):
@@ -52,6 +53,7 @@ DEPENDENCIES:
   - pop
   - ReactiveTableViewBinding
   - TGPControls
+  - Tweaks
   - UICKeyChainStore
   - UIColor+ContrastingColor
   - VBFPopFlatButton
@@ -77,6 +79,7 @@ SPEC CHECKSUMS:
   ReactiveCocoa: e2db045570aa97c695e7aa97c2bcab222ae51f4a
   ReactiveTableViewBinding: f925165a270dc51a3bc02ace494a2f212ae04498
   TGPControls: cb814ac463c21d64a428aaad37d55d1763fb2e90
+  Tweaks: 524fa47636cce3bf3a4d9156e980f10ae9480e81
   UICKeyChainStore: 69eb0c3a6f669bccf16ba88de3b9069b71501361
   UIColor+ContrastingColor: 02c04a8cd29e88a5680583b0f72d7b68f8d1e1a5
   VBFPopFlatButton: 782344da63f104c279a857d806e065117a7e1196

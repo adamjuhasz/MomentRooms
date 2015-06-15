@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>momentRooms copy.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>22</integer>
+		</dict>
 		<key>momentRooms.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -18,6 +23,11 @@
 			<true/>
 		</dict>
 		<key>2E1C58E91B0D23D100A42D88</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2EA876911B2F8E6E00893D14</key>
 		<dict>
 			<key>primary</key>
 			<true/>

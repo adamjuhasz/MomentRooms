@@ -42,6 +42,7 @@
         self.subscribedRooms = [NSMutableArray array];
         globalCachedMoments = [NSMutableDictionary dictionary];
         globalCachedRooms = [NSMutableDictionary dictionary];
+        self.loggedIn = NO;
         
         @weakify(self);
         [RACObserve(self, loggedIn) subscribeNext:^(NSNumber *isLoggedIn) {
@@ -142,6 +143,7 @@
     
     newRoom.roomid = [NSString stringWithFormat:@"%@_%@", @"@temp", [NSDate date]];
     newRoom.members = @[[self convertPFUserToMomentUser:[PFUser currentUser]]];
+    newRoom.allowsPosting = NO; //can't post because no roomid yet
     NSMutableArray *subscribedRooms = [self mutableArrayValueForKey:@"subscribedRooms"];
     [subscribedRooms insertObject:newRoom atIndex:0];
     [globalCachedRooms setObject:newRoom forKey:newRoom.roomid];
@@ -155,20 +157,25 @@
             return;
             
         }
+        //is based on a dictionary so have to change the kay
         [globalCachedRooms removeObjectForKey:newRoom.roomid];
-        
-        newRoom.roomid = createdRoom.objectId;
-        newRoom.createdAt = createdRoom.createdAt;
-        
+            newRoom.roomid = createdRoom.objectId;
+            newRoom.createdAt = createdRoom.createdAt;
+            newRoom.allowsPosting = YES;    //can now post because we know the roomID
         [globalCachedRooms setObject:newRoom forKey:newRoom.roomid];
         
+        //subscribedRooms is an array so index does not need to change
+        
         [self registerForPushForRoom:newRoom];
-        [createdRoom pinInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        [createdRoom pinInBackgroundWithName:@"subscribedRooms" block:^(BOOL succeeded, NSError *error){
             if (error) {
                 NSLog(@"Error creating room \"%@\"; couldnt pin; %@", createdRoom, error);
                 [self tagError:@"createRoom" withError:error];
                 [self getsubscribedRoomsWithCompletionBlock:nil];
+                return;
             }
+            
+            //reset the shown rooms
             [self loadCachedsubscribedRoomsWithCompletionBlock:nil];
         }];
     }];
@@ -576,7 +583,9 @@
     }
     
     newRoom = [PFObject objectWithClassName:@"Room"];
-    newRoom.objectId = room.roomid;
+    if (room.roomid) {
+        newRoom.objectId = room.roomid;
+    }
     newRoom[@"name"] = room.roomName;
     if (room.backgroundImage) {
         NSData *imageData = UIImageJPEGRepresentation(room.backgroundImage, 0.8);
@@ -607,6 +616,9 @@
     newRoom.backgroundColor = [UIColor colorWithString:room[@"backgroundColor"]];
     newRoom.isSubscribed = [self isRegisteredForPushForRoom:newRoom];
     newRoom.createdAt = room.createdAt;
+    if (room[@"allowsPosting"]) {
+        newRoom.allowsPosting = [room[@"allowsPosting"] boolValue];
+    }
     
     [self getUsersForRoom:newRoom withCompletionBlock:^(NSArray *membersOfRoom) {
         newRoom.members = membersOfRoom;
@@ -796,6 +808,7 @@
             }
             
             [self getsubscribedRoomsWithCompletionBlock:^(NSArray *rooms) {
+                //this will autiomatically refresh the rooms
                 MomentRoom *aRoom = [globalCachedRooms objectForKey:roomID];
                 [self getMomentsForRoom:aRoom WithCompletionBlock:nil];
                 [self registerForPushForRoom:aRoom];
@@ -928,7 +941,9 @@
     // Store the deviceToken in the current Installation and save it to Parse
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
-    currentInstallation[@"user"] = [PFUser currentUser];
+    if ([PFUser currentUser]) {
+        currentInstallation[@"user"] = [PFUser currentUser];
+    }
     [currentInstallation saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
         if (error) {
             NSLog(@"Error storePushDeviceToken; Couldn't save PFInstallation: %@", error);

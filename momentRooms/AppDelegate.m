@@ -13,9 +13,24 @@
 #import <Crashlytics/Crashlytics.h>
 #import <DigitsKit/DigitsKit.h>
 #import "LoginViewController.h"
+#import <Tweaks/FBTweakShakeWindow.h>
 
 @implementation AppDelegate
 
+- (NSMutableDictionary *)buildFilterDictionary:(NSArray *)filterClassNames  // 1
+{
+    NSMutableDictionary *filters = [NSMutableDictionary dictionary];
+    for (NSString *className in filterClassNames) {                         // 2
+        CIFilter *filter = [CIFilter filterWithName:className];             // 3
+        
+        if (filter) {
+            filters[className] = [filter attributes];                       // 4
+        } else {
+            NSLog(@"could not create '%@' filter", className);
+        }
+    }
+    return filters;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
@@ -28,7 +43,11 @@
 #else
     [Fabric with:@[CrashlyticsKit, DigitsKit]];
 #endif
-
+    NSMutableDictionary *filtersByCategory = [NSMutableDictionary dictionary];
+    
+    NSMutableArray *filterNames = [NSMutableArray array];
+    [filterNames addObjectsFromArray:[CIFilter filterNamesInCategory:kCICategoryGeometryAdjustment]];
+    NSMutableDictionary *aFilterDictionary = [self buildFilterDictionary:filterNames];
     
     // Initialize Parse.
     [Parse setApplicationId:@"w1yclkbSiKmKKtZ8APYzZwLsAaHGDUsC9YyLfFHb"
@@ -39,7 +58,7 @@
     
     // ...
     self.mainViewController = [[IntroScreenViewController alloc] init];
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window = [[FBTweakShakeWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = self.mainViewController;
     [self.window makeKeyAndVisible];
     
