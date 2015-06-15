@@ -166,7 +166,7 @@
         //subscribedRooms is an array so index does not need to change
         
         [self registerForPushForRoom:newRoom];
-        [createdRoom pinInBackgroundWithBlock:^(BOOL succeeded, NSError *error){
+        [createdRoom pinInBackgroundWithName:@"subscribedRooms" block:^(BOOL succeeded, NSError *error){
             if (error) {
                 NSLog(@"Error creating room \"%@\"; couldnt pin; %@", createdRoom, error);
                 [self tagError:@"createRoom" withError:error];

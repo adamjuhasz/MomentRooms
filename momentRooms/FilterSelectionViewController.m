@@ -51,11 +51,6 @@
     
     self.view.backgroundColor = [UIColor blackColor];
     
-    filterScrollview = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-96, self.view.bounds.size.width, 96)];
-    filterScrollview.clipsToBounds = YES;
-    [self generateFilterViews];
-    [self.view addSubview:filterScrollview];
-    
     RAC(editingView.moment, image) = RACObserve(self, editableImage);
     [self rac_liftSelector:@selector(setThumbnailTo:) withSignals:RACObserve(editingView, croppedImage), nil];
     [self rac_liftSelector:@selector(setThumbnailTo:) withSignals:RACObserve(self, editableImage), nil];
@@ -96,6 +91,12 @@
     if (self.editableImage) {
         editingView.moment.image = self.editableImage;
     }
+    
+    filterScrollview = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-96, self.view.bounds.size.width, 96)];
+    filterScrollview.clipsToBounds = YES;
+    [self generateFilterViews];
+    [self.view addSubview:filterScrollview];
+    
     animationTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateTimers) userInfo:nil repeats:YES];
 }
 

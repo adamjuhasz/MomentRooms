@@ -166,12 +166,13 @@
         RoomPlate *aRoom = [[RoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
         [self setupPlate:aRoom withRoom:theRoomModel intoPosition:i];
     }
-    scroller.contentSize = CGSizeMake((height*9/16)*i + (i+1)*self.inset, height);
+    
+    scroller.contentSize = CGSizeMake(CGRectGetMaxX([[cachedRoomPlates lastObject] frame]) + self.inset, height);
 }
 
 - (CGSize)sizeOfMininimzedRoom
 {
-    return CGSizeMake(height*9/16 - 2*self.inset, height - 2*self.inset);
+    return CGSizeMake(height*9/16, height);
 }
 
 - (CGRect)frameOfMinimzedRoomAt:(NSInteger)i
@@ -224,12 +225,10 @@
                     [[MomentsCloud sharedCloud] tagEvent:@"Maximize Room" withInformation:[NSDictionary dictionaryWithObjectsAndKeys:@"gesture", @"source", nil]];
                     [self maximizeRoom:(RoomPlate*)recognizer.view];
                 } else {
-                    recognizer.view.center = centerLocation;
-                    recognizer.view.bounds = CGRectMake(0, 0, height*9/16, height);
+                    [self minimizeAPlate:(RoomPlate*)recognizer.view toLocation:[cachedRoomPlates indexOfObject:recognizer.view] withVelocity:velocity];
                 }
             } else {
-                recognizer.view.center = centerLocation;
-                recognizer.view.bounds = CGRectMake(0, 0, height*9/16, height);
+                [self minimizeAPlate:(RoomPlate*)recognizer.view toLocation:[cachedRoomPlates indexOfObject:recognizer.view] withVelocity:velocity];
             }
         }
             break;
@@ -357,28 +356,11 @@
     CGRect currentFrameInScroller = [scroller convertRect:selectedRoom.frame fromView:self.view];
     [selectedRoom removeFromSuperview];
     
-    [selectedRoom willMinimizeRoom];
-
-    CGRect scrollerFrame = [self frameOfMinimzedRoomAt:location];
     selectedRoom.bounds = CGRectMake(0, 0, currentFrameInScroller.size.width, currentFrameInScroller.size.height);
     selectedRoom.center = CGPointMake(CGRectGetMidX(currentFrameInScroller), CGRectGetMidY(currentFrameInScroller));
-    //selectedRoom.bounds = CGRectMake(0, 0, scrollerFrame.size.width, scrollerFrame.size.height);
-    //selectedRoom.center = CGPointMake(CGRectGetMidX(scrollerFrame), CGRectGetMidY(scrollerFrame));
     [scroller addSubview:selectedRoom];
     
-    POPSpringAnimation *boundAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewBounds];
-    //CGRect startBound = CGRectMake(0, 0, currentFrameInScroller.size.width, currentFrameInScroller.size.height);
-    //boundAnimation.fromValue = [NSValue valueWithCGRect:startBound];
-    boundAnimation.toValue = [NSValue valueWithCGRect:CGRectMake(0, 0, scrollerFrame.size.width, scrollerFrame.size.height)];
-    boundAnimation.springSpeed = 15;
-    [selectedRoom pop_addAnimation:boundAnimation forKey:@"bounds"];
-    
-    POPSpringAnimation *centerAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewCenter];
-    centerAnimation.toValue = [NSValue valueWithCGPoint:CGPointMake(CGRectGetMidX(scrollerFrame), CGRectGetMidY(scrollerFrame))];
-    centerAnimation.springSpeed = 15;
-    [selectedRoom pop_addAnimation:centerAnimation forKey:@"center"];
-    
-    [selectedRoom didMinimizeRoom];
+    [self minimizeAPlate:selectedRoom toLocation:location withVelocity:CGPointMake(0, 0)];
     
     for (UIGestureRecognizer *recognizer in selectedRoom.gestureRecognizers) {
         recognizer.enabled = YES;
@@ -388,6 +370,26 @@
     selectedRoom = nil;
     
     [[MomentsCloud sharedCloud] tagEvent:@"Minimize Room" withInformation:nil];
+}
+
+-(void)minimizeAPlate:(RoomPlate*)plate toLocation:(NSInteger)location withVelocity:(CGPoint)veloctity;
+{
+    [plate willMinimizeRoom];
+    
+    CGRect scrollerFrame = [self frameOfMinimzedRoomAt:location];
+    
+    POPSpringAnimation *boundAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewBounds];
+    boundAnimation.toValue = [NSValue valueWithCGRect:CGRectMake(0, 0, CGRectGetWidth(scrollerFrame), CGRectGetHeight(scrollerFrame))];
+    boundAnimation.springSpeed = 15;
+    [plate pop_addAnimation:boundAnimation forKey:@"bounds"];
+    
+    POPSpringAnimation *centerAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewCenter];
+    centerAnimation.toValue = [NSValue valueWithCGPoint:CGPointMake(CGRectGetMidX(scrollerFrame), CGRectGetMidY(scrollerFrame))];
+    centerAnimation.springSpeed = 15;
+    centerAnimation.velocity = [NSValue valueWithCGPoint:veloctity];
+    [plate pop_addAnimation:centerAnimation forKey:@"center"];
+
+    [plate didMinimizeRoom];
 }
 
 - (void)newMoment
