@@ -21,8 +21,10 @@
 #import "RecentMomentsView.h"
 #import "FilterSelectionViewController.h"
 #import "LocalRoomPlate.h"
+#import <Tweaks/FBTweak.h>
+#import <Tweaks/FBTweakInline.h>
 
-@interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate, RecentMomentsDelegate>
+@interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate, RecentMomentsDelegate, FBTweakObserver>
 {
     NSMutableArray *verticalPanning;
     CGPoint centerLocation;
@@ -34,8 +36,11 @@
     RoomPlate *selectedRoom;
     NSMutableArray *cachedRooms;
     NSMutableArray *cachedRoomPlates;
-    CGFloat inset;
 }
+
+@property CGFloat inset;
+@property CGFloat tracking;
+
 @end
 
 @implementation IntroScreenViewController
@@ -54,8 +59,8 @@
     momentViewer.delegate = self;
     [self.view addSubview:momentViewer];
     
-    height = self.view.bounds.size.height - self.view.bounds.size.width - 1;
-    scroller = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height-height, self.view.bounds.size.width, height)];
+    height = self.view.bounds.size.height - CGRectGetMaxY(momentViewer.frame);
+    scroller = [[UIScrollView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(momentViewer.frame), self.view.bounds.size.width, height)];
     scroller.scrollEnabled = YES;
     scroller.clipsToBounds = NO;
     //scroller.delegate = self;
@@ -67,59 +72,120 @@
     [addButton addTarget:self action:@selector(newMoment) forControlEvents:UIControlEventTouchUpInside];
     //[self.view addSubview:addButton];
     
-    inset = 1;
+    FBTweak *insetTweak = [[FBTweak alloc] initWithIdentifier:@"main.rooms.inset"];
+    insetTweak.name = @"inset";
+    insetTweak.defaultValue = @(3.0);
+    insetTweak.minimumValue = @(0.0);
+    insetTweak.maximumValue = @(20.0);
+    insetTweak.stepValue = @(1.0);
+    [insetTweak addObserver:self];
     
-    [[RACObserve(singleCloud, subscribedRooms) filter:^BOOL(NSArray *rooms) {
+    FBTweak *trackingTweak = [[FBTweak alloc] initWithIdentifier:@"main.rooms.tracking"];
+    trackingTweak.name = @"tracking";
+    trackingTweak.defaultValue = @([insetTweak.defaultValue floatValue] * -1);
+    trackingTweak.minimumValue = @([insetTweak.maximumValue floatValue] * -1);
+    trackingTweak.maximumValue = @(0);
+    trackingTweak.stepValue = insetTweak.stepValue;
+    [trackingTweak addObserver:self];
+    
+    FBTweakStore *store = [FBTweakStore sharedInstance];
+    
+    FBTweakCategory *introCategory = [[FBTweakCategory alloc] initWithName:@"Main Screen"];
+    [store addTweakCategory:introCategory];
+    
+    FBTweakCollection *roomsCollection = [[FBTweakCollection alloc] initWithName:@"Rooms"];
+    [introCategory addTweakCollection:roomsCollection];
+    
+    [roomsCollection addTweak:insetTweak];
+    [roomsCollection addTweak:trackingTweak];
+    
+    self.inset = [insetTweak.defaultValue floatValue];
+    self.tracking = [trackingTweak.defaultValue floatValue];
+    
+    [self rac_liftSelector:@selector(generatePlates:) withSignals:[[RACObserve(singleCloud, subscribedRooms) throttle:0.5] filter:^BOOL(NSArray *rooms) {
         if (rooms != nil && rooms.count > 0 && selectedRoom == nil) {
             return YES;
         } else {
             return NO;
         }
-    }] subscribeNext:^(NSArray *currentSubscribedRooms) {
-        cachedRooms = [currentSubscribedRooms mutableCopy];
-        [verticalPanning removeAllObjects];
-        for (UIView *aView in cachedRoomPlates) {
-            [aView removeFromSuperview];
-        }
-        [cachedRoomPlates removeAllObjects];
-        
-        int i=0;
-        int constantRooms=0;
-        
-        CreateARoomPlate *createARoom = [[CreateARoomPlate alloc] initWithFrame:CGRectMake(0, 0, [self sizeOfMininimzedRoom].width, [self sizeOfMininimzedRoom].height)];
-        CreateNewMomentRoom *createNewMomentRoom = [[CreateNewMomentRoom alloc] init];
-        [cachedRooms insertObject:createARoom atIndex:i];
-        [self setupPlate:createARoom withRoom:createNewMomentRoom intoPosition:i];
-        constantRooms++;
-        i++;
+    }], nil];
+    
+    [self rac_liftSelector:@selector(generatePlates:) withSignals:RACObserve(self, inset), nil];
+    [self rac_liftSelector:@selector(generatePlates:) withSignals:RACObserve(self, tracking), nil];
+}
+
+- (void)tweakDidChange:(FBTweak *)tweak
+{
+    if ([tweak.identifier isEqualToString:@"main.rooms.inset"]) {
+        self.inset = [tweak.currentValue floatValue];
         
         /*
-        LocalRoomPlate *localPlate = [[LocalRoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
-        LocalRoom *localRoom = [[LocalRoom alloc] init];
-        [cachedRooms insertObject:localRoom atIndex:i];
-        [self setupPlate:localPlate withRoom:localRoom intoPosition:i];
-        constantRooms++;
-        i++;
-         */
-        
-        for (; i<cachedRooms.count; i++) {
-            MomentRoom *theRoomModel = cachedRooms[i];
-            RoomPlate *aRoom = [[RoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
-            [self setupPlate:aRoom withRoom:theRoomModel intoPosition:i];
-        }
-        scroller.contentSize = CGSizeMake((height*9/16)*i + (i+1)*inset, height);
-    }];
+        FBTweakStore *store = [FBTweakStore sharedInstance];
+        FBTweakCategory *mainScreen = [store tweakCategoryWithName:@"Main Screen"];
+        FBTweakCollection *rooms = [mainScreen tweakCollectionWithName:@"Rooms"];
+        FBTweak *tracking = [rooms tweakWithIdentifier:@"main.rooms.tracking"];
+        tracking.currentValue = @([tweak.currentValue floatValue] * -1);
+        */
+    }
+    if ([tweak.identifier isEqualToString:@"main.rooms.tracking"]) {
+        self.tracking = [tweak.currentValue floatValue];
+    }
+}
 
+- (void)generatePlates:(id)changer
+{
+    cachedRooms = [[[MomentsCloud sharedCloud] subscribedRooms] mutableCopy];
+    
+    [verticalPanning removeAllObjects];
+    for (UIView *aView in cachedRoomPlates) {
+        [aView removeFromSuperview];
+    }
+    [cachedRoomPlates removeAllObjects];
+    
+    int i=0;
+    int constantRooms=0;
+    
+    CreateARoomPlate *createARoom = [[CreateARoomPlate alloc] initWithFrame:CGRectMake(0, 0, [self sizeOfMininimzedRoom].width, [self sizeOfMininimzedRoom].height)];
+    CreateNewMomentRoom *createNewMomentRoom = [[CreateNewMomentRoom alloc] init];
+    [cachedRooms insertObject:createARoom atIndex:i];
+    [self setupPlate:createARoom withRoom:createNewMomentRoom intoPosition:i];
+    constantRooms++;
+    i++;
+    
+    /*
+     LocalRoomPlate *localPlate = [[LocalRoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
+     LocalRoom *localRoom = [[LocalRoom alloc] init];
+     [cachedRooms insertObject:localRoom atIndex:i];
+     [self setupPlate:localPlate withRoom:localRoom intoPosition:i];
+     constantRooms++;
+     i++;
+     */
+    
+    for (; i<cachedRooms.count; i++) {
+        MomentRoom *theRoomModel = cachedRooms[i];
+        RoomPlate *aRoom = [[RoomPlate alloc] initWithFrame:CGRectMake(0, 0, height*9/16, height)];
+        [self setupPlate:aRoom withRoom:theRoomModel intoPosition:i];
+    }
+    scroller.contentSize = CGSizeMake((height*9/16)*i + (i+1)*self.inset, height);
 }
 
 - (CGSize)sizeOfMininimzedRoom
 {
-    return CGSizeMake(height*9/16, height);
+    return CGSizeMake(height*9/16 - 2*self.inset, height - 2*self.inset);
+}
+
+- (CGRect)frameOfMinimzedRoomAt:(NSInteger)i
+{
+    CGSize minimizedRoomSize = [self sizeOfMininimzedRoom];
+    CGRect frameOfPlate = CGRectMake(minimizedRoomSize.width*i, 0, minimizedRoomSize.width, minimizedRoomSize.height);
+    frameOfPlate = CGRectInset(frameOfPlate, self.inset, self.inset);
+    frameOfPlate.origin.x += i*self.tracking;
+    return frameOfPlate;
 }
 
 - (void)setupPlate:(RoomPlate*)plate withRoom:(MomentRoom*)room intoPosition:(NSInteger)i
 {
-    plate.frame = CGRectMake((height*9/16+1)*i+inset, 0, [self sizeOfMininimzedRoom].width, [self sizeOfMininimzedRoom].height);
+    plate.frame = [self frameOfMinimzedRoomAt:i];
     plate.room = room;
     plate.delegate = self;
     [scroller addSubview:plate];
@@ -293,7 +359,7 @@
     
     [selectedRoom willMinimizeRoom];
 
-    CGRect scrollerFrame = CGRectMake((height*9/16+inset)*location + inset, 0, height*9/16, height);
+    CGRect scrollerFrame = [self frameOfMinimzedRoomAt:location];
     selectedRoom.bounds = CGRectMake(0, 0, currentFrameInScroller.size.width, currentFrameInScroller.size.height);
     selectedRoom.center = CGPointMake(CGRectGetMidX(currentFrameInScroller), CGRectGetMidY(currentFrameInScroller));
     //selectedRoom.bounds = CGRectMake(0, 0, scrollerFrame.size.width, scrollerFrame.size.height);

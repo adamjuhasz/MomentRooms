@@ -33,7 +33,7 @@
         navigationHeaderHeight = 64;
         
         self.clipsToBounds = YES;
-        self.layer.cornerRadius = 3.0;
+        self.layer.cornerRadius = 0.0;
         
         text = [[UITextField alloc] initWithFrame:CGRectMake(0 , 20, frame.size.width, 30)];
         text.font = [UIFont fontWithName:@"HelveticaNeue-Medium " size:34];
@@ -210,7 +210,7 @@
         //text.font = [UIFont fontWithName:@"HelveticaNeue-Medium " size:8];
         [text sizeToFit];
         text.bounds = CGRectMake(0, 0, bounds.size.width, text.bounds.size.height);
-        self.layer.cornerRadius = 3.0;
+        self.layer.cornerRadius = 0.0;
     }
     
     membersOfRoom.center = CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));

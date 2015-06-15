@@ -144,7 +144,6 @@
 
 - (void)willMinimizeRoom
 {
-    text.text = @"";
     text.layer.borderWidth=0.0;
     minimizeButton.hidden = YES;
     shareButton.hidden = YES;
@@ -196,6 +195,10 @@
     newRoom.backgroundColor = self.room.backgroundColor;
     newRoom.backgroundImage = self.room.backgroundImage;
     [[MomentsCloud sharedCloud] createRoom:newRoom];
+    
+    text.text = @"";
+    self.room = [[CreateNewMomentRoom alloc] init];
+    
     [self.delegate minimizeRoom];
 }
 
