@@ -23,6 +23,7 @@
 #import "LocalRoomPlate.h"
 #import <Tweaks/FBTweak.h>
 #import <Tweaks/FBTweakInline.h>
+#import <ColorUtils/ColorUtils.h>
 
 @interface IntroScreenViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate, RoomDelegate, RecentMomentsDelegate, FBTweakObserver>
 {
@@ -58,6 +59,10 @@
     RecentMomentsView *momentViewer = [[RecentMomentsView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.width)];
     momentViewer.delegate = self;
     [self.view addSubview:momentViewer];
+    
+    UIView *spotTaker = [[UIView alloc] initWithFrame:momentViewer.frame];
+    spotTaker.backgroundColor = [UIColor colorWithString:@"#E5E5E5"];
+    [self.view insertSubview:spotTaker belowSubview:momentViewer];
     
     height = self.view.bounds.size.height - CGRectGetMaxY(momentViewer.frame);
     scroller = [[UIScrollView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(momentViewer.frame), self.view.bounds.size.width, height)];

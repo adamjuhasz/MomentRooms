@@ -12,6 +12,7 @@
 #import <ReactiveCocoa/ReactiveCocoa.h>
 #import <ColorUtils/ColorUtils.h>
 #import <CocoaSecurity/CocoaSecurity.h>
+#import <DigitsKit/DigitsKit.h>
 
 #define keychainPasswordKey(username) [NSString stringWithFormat:@"%@%@", @"password", username]
 
@@ -55,6 +56,9 @@
                     [self getMomentsForSubscribedRoomsWithCompletionBlock:nil];
                 }];
             }
+#ifdef DEBUG
+            [[Digits sharedInstance] logOut];
+#endif
         }];
         
         if ([PFUser currentUser]) {
@@ -127,7 +131,12 @@
     PFUser *user = [PFUser currentUser];
     if (user == nil) {
         return nil;
+    } else if (user[@"isNewDigitUser"] == nil || [user[@"isNewDigitUser"] boolValue] == YES) {
+        return nil;
     } else {
+        if (user[@"nickname"]) {
+            return user[@"nickname"];
+        }
         return user.username;
     }
 }
@@ -347,12 +356,13 @@
     
     [globalCachedMoments setObject:theMomentToCache forKey:theMomentToCache.postid];
     
+    NSInteger maxRecentMoments = 5;
     for (int i=0; i<MIN(self.mostRecentMoments.count, 5); i++) {
         Moment *aRecentMoment = self.mostRecentMoments[i];
         if ([theMomentToCache.dateCreated compare:aRecentMoment.dateCreated] == NSOrderedDescending) {
             NSMutableArray *recentMoments = [self mutableArrayValueForKey:@"mostRecentMoments"];
             [recentMoments insertObject:theMomentToCache atIndex:i];
-            if (recentMoments.count > 5) {
+            if (recentMoments.count > maxRecentMoments) {
                 [recentMoments removeLastObject];
             }
             break;
@@ -890,6 +900,10 @@
 
 - (void)getUsersForRoom:(MomentRoom*)momentRoom withCompletionBlock:(void (^)(NSArray*))completionBlock
 {
+    if (momentRoom == nil || momentRoom.roomid == nil || momentRoom.roomid.length == 0) {
+        return;
+    }
+    
     PFQuery *roleQuery = [PFRole query];
     [roleQuery whereKey:@"name" equalTo:momentRoom.roomid];
     [roleQuery getFirstObjectInBackgroundWithBlock:^(PFObject *object,  NSError  *error) {
@@ -1006,10 +1020,12 @@
 
 - (void)tagEvent:(NSString *)event withInformation:(NSDictionary *)info
 {
+    NSString *sanitizedEvent = [event stringByReplacingOccurrencesOfString:@" " withString:@""];
+    
     if (info) {
-        [PFAnalytics trackEventInBackground:event dimensions:info block:nil];
+        [PFAnalytics trackEventInBackground:sanitizedEvent dimensions:info block:nil];
     } else {
-        [PFAnalytics trackEventInBackground:event block:nil];
+        [PFAnalytics trackEventInBackground:sanitizedEvent block:nil];
     }
 }
 
@@ -1026,10 +1042,10 @@
     PFQuery *momentsQuery = [PFQuery queryWithClassName:@"Post"];
     [momentsQuery whereKey:@"expiresAt" lessThan:[NSDate date]];
     [momentsQuery findObjectsInBackgroundWithBlock:^(NSArray *expiredMoments, NSError *error){
-        for (PFObject *anExpiredMoment in expiredMoments) {
+        /*for (PFObject *anExpiredMoment in expiredMoments) {
             //delete its file
             
-        }
+        }*/
         [PFObject unpinAllInBackground:expiredMoments];
     }];
 }

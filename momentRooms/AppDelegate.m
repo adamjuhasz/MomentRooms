@@ -64,7 +64,7 @@
     
     if ([[MomentsCloud sharedCloud] loggedInUserName] == nil) {
         LoginViewController *loginView = [[LoginViewController alloc] init];
-        [self.mainViewController pushController:loginView withDirection:UIRectEdgeBottom withSuccess:nil];
+        [self.mainViewController pushController:loginView withDirection:UIRectEdgeRight withSuccess:nil];
     } else {
         
     }

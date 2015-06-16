@@ -13,7 +13,7 @@
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CLT-7v-u3W">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="414"/>
-                    <color key="backgroundColor" red="0.89965691137566139" green="0.89965691137566139" blue="0.89965691137566139" alpha="1" colorSpace="calibratedRGB"/>
+                    <color key="backgroundColor" red="0.89803921568627454" green="0.89803921568627454" blue="0.89803921568627454" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="CLT-7v-u3W" secondAttribute="height" multiplier="1:1" id="CNb-jj-cjH"/>
                     </constraints>
