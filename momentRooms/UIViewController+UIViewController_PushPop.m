@@ -21,11 +21,21 @@
     CGRect initialFrame = CGRectMake(self.view.bounds.size.width, 0, self.view.bounds.size.width, self.view.bounds.size.height);
     
     switch (direction) {
+        default:
+        case UIRectEdgeRight:
+            initialFrame = CGRectMake(self.view.bounds.size.width, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+            break;
+        
         case UIRectEdgeBottom:
             initialFrame = CGRectMake(0, self.view.bounds.size.height, self.view.bounds.size.width, self.view.bounds.size.height);
             break;
             
-        default:
+        case UIRectEdgeLeft:
+            initialFrame = CGRectMake(-1*self.view.bounds.size.width, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+            break;
+            
+        case UIRectEdgeTop:
+            initialFrame = CGRectMake(0, -1*self.view.bounds.size.height, self.view.bounds.size.width, self.view.bounds.size.height);
             break;
     }
     
@@ -67,13 +77,22 @@
     }
     
     CGRect exitFrame = CGRectMake(self.view.bounds.size.width, 0, self.view.bounds.size.width, self.view.bounds.size.height);
-    
     switch (direction) {
+        default:
+        case UIRectEdgeRight:
+            exitFrame = CGRectMake(self.view.bounds.size.width, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+            break;
+            
+        case UIRectEdgeBottom:
+            exitFrame = CGRectMake(0, self.view.bounds.size.height, self.view.bounds.size.width, self.view.bounds.size.height);
+            break;
+            
         case UIRectEdgeLeft:
             exitFrame = CGRectMake(-1*self.view.bounds.size.width, 0, self.view.bounds.size.width, self.view.bounds.size.height);
             break;
             
-        default:
+        case UIRectEdgeTop:
+            exitFrame = CGRectMake(0, -1*self.view.bounds.size.height, self.view.bounds.size.width, self.view.bounds.size.height);
             break;
     }
     

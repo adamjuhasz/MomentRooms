@@ -50,7 +50,7 @@
         [self addSubview:pager];
         
         MomentsCloud *theCloud = [MomentsCloud sharedCloud];
-        [RACObserve(theCloud, mostRecentMoments) subscribeNext:^(NSArray *recentMoments) {
+        [[RACObserve(theCloud, mostRecentMoments) throttle:2.0] subscribeNext:^(NSArray *recentMoments) {
             for (int i=0; i<MIN(recentMoments.count, momentViews.count); i++) {
                 MomentViewWithRoom *aViewer = momentViews[i];
                 aViewer.moment = recentMoments[i];

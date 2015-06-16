@@ -23,6 +23,9 @@
     JVFloatLabeledTextField *usernameField;
     NSArray *hiddenComponents;
     NSArray *firstComponents;
+    
+    UIButton *startButton;
+    UIButton *save;
 }
 @end
 
@@ -50,7 +53,7 @@
     
     [self.view addSubview:line];
     
-    UIButton *save = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    save = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     save.frame = CGRectMake(10, CGRectGetMaxY(line.frame) + 10, self.view.bounds.size.width - 20, 45);
     save.layer.cornerRadius = 6.0;
     save.backgroundColor = [UIColor colorWithString:@"#744EAA"];
@@ -65,9 +68,10 @@
     explanation.textAlignment = NSTextAlignmentCenter;
     explanation.text = @"We use Twitter Digits to authenticate you using a phone number";
     [explanation sizeToFit];
+    explanation.center = CGPointMake(self.view.bounds.size.width/2.0, explanation.center.y);
     [self.view addSubview:explanation];
     
-    UIButton *startButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    startButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     startButton.frame = CGRectMake(10, CGRectGetMaxY(explanation.frame) + 10, self.view.bounds.size.width - 20, 45);
     startButton.layer.cornerRadius = 6.0;
     startButton.backgroundColor = [UIColor colorWithString:@"#744EAA"];
@@ -81,9 +85,7 @@
     firstComponents = @[startButton, explanation];
     
     for (UIView *view in hiddenComponents) {
-        save.hidden = YES;
-        line.hidden = YES;
-        usernameField.hidden = YES;
+        view.hidden = YES;
     }
     
     RACSignal *validUsernameSignal = [usernameField.rac_textSignal
@@ -99,10 +101,8 @@
     [signUpActiveSignal subscribeNext:^(NSNumber *signupActive) {
         //allow saving
         if ([signupActive boolValue] == YES) {
-            [save setTitleColor:[UIColor blueColor] forState:UIControlStateNormal];
             save.enabled = YES;
         } else {
-            [save setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
             save.enabled = NO;
         }
     }];
@@ -111,13 +111,49 @@
 - (void)save
 {
     PFUser *current = [PFUser currentUser];
-    if (current)
+    if (current == nil) {
+        [self showAlert];
+        return;
+    }
     current[@"nickname"] =  usernameField.text;
     current[@"isNewDigitUser"] = @(NO);
-    [current save];
+    BOOL didSave = [current save];
+    if (didSave == NO) {
+        [self showAlert];
+        return;
+    }
     
     [[MomentsCloud sharedCloud] setLoggedIn:YES];
     [self.parentViewController popController:self withSuccess:nil];
+}
+
+- (void)showAlert
+{
+    usernameField.text = @"";
+    save.enabled = NO;
+    startButton.enabled = YES;
+    
+    for (UIView *view in hiddenComponents) {
+        view.hidden = YES;
+    }
+    for (UIView *view in firstComponents) {
+        view.hidden = NO;
+    }
+    
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@""
+                                                                   message:@"Can't create user"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* stayAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           
+                                                       }];
+    [alert addAction:stayAction];
+    
+    [self presentViewController:alert animated:YES completion:^{
+        
+    }];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -129,10 +165,15 @@
 
 - (void)loadDigits
 {
+    startButton.enabled = NO;
+    
     [PFUser loginWithDigitsInBackground:^(PFUser *user, NSError *error) {
         if(!error){
             // do something with user
             [user save];
+            PFUser *result = [PFUser become:user.sessionToken];
+            startButton.enabled = YES;
+            
             PFUser *current = [PFUser currentUser];
             if ([current[@"isNewDigitUser"] boolValue] == YES) {
                 for (UIView *view in hiddenComponents) {
