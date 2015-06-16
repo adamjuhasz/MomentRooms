@@ -24,8 +24,6 @@
     
     self.view.backgroundColor = [UIColor blackColor];
     
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
-    
     CameraControl *cameraPreview = [[CameraControl alloc] init];
     [cameraPreview willMoveToParentViewController:self];
     [self addChildViewController:cameraPreview];
@@ -60,6 +58,13 @@
     [super viewWillAppear:animated];
     
     self.view.userInteractionEnabled = YES;
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
 }
 
 - (void)goBack

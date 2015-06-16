@@ -82,6 +82,8 @@
     if (self.room) {
         navigationBar.backgroundColor = self.room.backgroundColor;
     }
+    
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationSlide];
 }
 
 - (void)viewDidAppear:(BOOL)animated
