@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "056DB13FC39E45B9EAF924D8"
+               BlueprintIdentifier = "EDAEC1681AC479D99D190D01"
                BuildableName = "libPods-ReactiveTableViewBinding.a"
                BlueprintName = "Pods-ReactiveTableViewBinding"
                ReferencedContainer = "container:Pods.xcodeproj">

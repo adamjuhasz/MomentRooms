@@ -8,253 +8,231 @@
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>2</integer>
 		</dict>
 		<key>Pods-CocoaSecurity.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>3</integer>
 		</dict>
 		<key>Pods-ColorUtils.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>4</integer>
 		</dict>
 		<key>Pods-FastttCamera.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>5</integer>
 		</dict>
 		<key>Pods-GPUImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>6</integer>
 		</dict>
 		<key>Pods-JVFloatLabeledTextField.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>7</integer>
 		</dict>
 		<key>Pods-Mantle.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>8</integer>
+		</dict>
+		<key>Pods-Masonry.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
 		</dict>
 		<key>Pods-Moment-Moment.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>10</integer>
 		</dict>
 		<key>Pods-Moment.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>9</integer>
 		</dict>
 		<key>Pods-NYXImagesKit.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>11</integer>
 		</dict>
 		<key>Pods-PhotoManager-PhotoManager.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>13</integer>
 		</dict>
 		<key>Pods-PhotoManager.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>12</integer>
 		</dict>
 		<key>Pods-ReactiveCocoa.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>15</integer>
 		</dict>
 		<key>Pods-ReactiveTableViewBinding.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>16</integer>
 		</dict>
 		<key>Pods-TGPControls.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>17</integer>
 		</dict>
 		<key>Pods-Tweaks.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>18</integer>
 		</dict>
 		<key>Pods-UICKeyChainStore.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>19</integer>
 		</dict>
 		<key>Pods-UIColor+ContrastingColor.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>20</integer>
 		</dict>
 		<key>Pods-VBFPopFlatButton.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>21</integer>
+		</dict>
+		<key>Pods-jot.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
 		</dict>
 		<key>Pods-pop.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>14</integer>
 		</dict>
 		<key>Pods.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
-			<key>orderHint</key>
-			<integer>1</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>056DB13FC39E45B9EAF924D8</key>
+		<key>01B53BF6E8D2EED844B7A38D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>11FB8EEEBBEF0976E2B935FE</key>
+		<key>161DD1CFC66887BF085900A6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>13F593A99965859AAE833B74</key>
+		<key>355839D049F50D5FF929C96D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>40EF667E208273309550D96E</key>
+		<key>4A961403EB1E4D91F2CEF546</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>506B033C1CA62F15DD079EF6</key>
+		<key>611125BCD26CC50A78410102</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>564D1FDB03577806E3DF3987</key>
+		<key>6931F3120F4DAA48AEA97853</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>59F21D792AFE3A01C8CEF813</key>
+		<key>778D7F2730EBCD2DEDC53B35</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>67D4E5615E873531E7307FB0</key>
+		<key>8A38DBBA71B2BD9BE2AE20E8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>7D47EF90F74D3158308E0219</key>
+		<key>8EEC9424CAEC6BB8E36D02D7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>888A323FB2C1EE57DCBB9E96</key>
+		<key>ACAD14077E1601038BEC8D97</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>96F7180F2D79C7CD6C4F24CF</key>
+		<key>AD618A410F3BA1505903E03A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9B86BA5B139DB4FA535EEB7B</key>
+		<key>AE411AC25C2DC70CAC76845B</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9FBB417A50D27434F4A7D45D</key>
+		<key>B0B62138C6E79F6A1A52A588</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>A355168793769C9F4A6127CE</key>
+		<key>C19BFF6D29A489AC4A32CC81</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C3EA0BADDBCF0BA22284AC2D</key>
+		<key>C504BCB893FFA5B24CC4BD59</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C53C904CB192E6CFB6E3C2E8</key>
+		<key>C992B0175F48A2B926BF6E71</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>C7CA03A209BC634A3E9D5C89</key>
+		<key>CA383220095E0919FA8669EA</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>D4B80138D4F9B964373F5BF4</key>
+		<key>D1C554FCACBAA6070E0F73C8</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>DF55C80F6FA2ED073CA11FBB</key>
+		<key>DE9947F7773B915911D43417</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>EB470CBCF5D1F03124E3B630</key>
+		<key>DF575553F5FA006ADF438409</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F7B7858D1A9935FA0142A380</key>
+		<key>E800AA694C9309C197CB0886</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EDAEC1681AC479D99D190D01</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F20C96AA34C5A1DA413AB3D1</key>
 		<dict>
 			<key>primary</key>
 			<true/>

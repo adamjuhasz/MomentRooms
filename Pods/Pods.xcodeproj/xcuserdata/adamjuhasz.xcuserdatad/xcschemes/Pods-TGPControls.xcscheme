@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "59F21D792AFE3A01C8CEF813"
+               BlueprintIdentifier = "161DD1CFC66887BF085900A6"
                BuildableName = "libPods-TGPControls.a"
                BlueprintName = "Pods-TGPControls"
                ReferencedContainer = "container:Pods.xcodeproj">

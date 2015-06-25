@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "40EF667E208273309550D96E"
+               BlueprintIdentifier = "611125BCD26CC50A78410102"
                BuildableName = "Moment.bundle"
                BlueprintName = "Pods-Moment-Moment"
                ReferencedContainer = "container:Pods.xcodeproj">

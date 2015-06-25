@@ -12,6 +12,8 @@
 	<dict>
 		<key>5CA2F47A2ED8BA35E1F85697E09B2822F1CF9F71</key>
 		<string>https://github.com/adamjuhasz/Moment.git</string>
+		<key>738415EBB29084577366B6538213B79AC318F6C8</key>
+		<string>https://github.com/IFTTT/jot.git</string>
 		<key>8312B29ABA30347EAE01B591DD21130321766F48</key>
 		<string>https://github.com/adamjuhasz/MomentRooms.git</string>
 		<key>CDDF40F39EAAD9EC0F4732E86123B12CCCFF14B1</key>
@@ -23,6 +25,8 @@
 	<dict>
 		<key>5CA2F47A2ED8BA35E1F85697E09B2822F1CF9F71</key>
 		<string>../../Moment</string>
+		<key>738415EBB29084577366B6538213B79AC318F6C8</key>
+		<string>../../jot</string>
 		<key>8312B29ABA30347EAE01B591DD21130321766F48</key>
 		<string>..</string>
 		<key>CDDF40F39EAAD9EC0F4732E86123B12CCCFF14B1</key>
@@ -36,6 +40,14 @@
 	<string>8312B29ABA30347EAE01B591DD21130321766F48</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>738415EBB29084577366B6538213B79AC318F6C8</string>
+			<key>IDESourceControlWCCName</key>
+			<string>jot</string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>

@@ -78,6 +78,12 @@
 #define COCOAPODS_VERSION_MINOR_Mantle_extobjc 0
 #define COCOAPODS_VERSION_PATCH_Mantle_extobjc 2
 
+// Masonry
+#define COCOAPODS_POD_AVAILABLE_Masonry
+#define COCOAPODS_VERSION_MAJOR_Masonry 0
+#define COCOAPODS_VERSION_MINOR_Masonry 6
+#define COCOAPODS_VERSION_PATCH_Masonry 1
+
 // Moment
 #define COCOAPODS_POD_AVAILABLE_Moment
 #define COCOAPODS_VERSION_MAJOR_Moment 0
@@ -155,6 +161,12 @@
 #define COCOAPODS_VERSION_MAJOR_VBFPopFlatButton 0
 #define COCOAPODS_VERSION_MINOR_VBFPopFlatButton 0
 #define COCOAPODS_VERSION_PATCH_VBFPopFlatButton 6
+
+// jot
+#define COCOAPODS_POD_AVAILABLE_jot
+#define COCOAPODS_VERSION_MAJOR_jot 0
+#define COCOAPODS_VERSION_MINOR_jot 1
+#define COCOAPODS_VERSION_PATCH_jot 3
 
 // pop
 #define COCOAPODS_POD_AVAILABLE_pop

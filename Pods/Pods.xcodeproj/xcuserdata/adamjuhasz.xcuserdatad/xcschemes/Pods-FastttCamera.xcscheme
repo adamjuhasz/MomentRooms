@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9B86BA5B139DB4FA535EEB7B"
+               BlueprintIdentifier = "4A961403EB1E4D91F2CEF546"
                BuildableName = "libPods-FastttCamera.a"
                BlueprintName = "Pods-FastttCamera"
                ReferencedContainer = "container:Pods.xcodeproj">

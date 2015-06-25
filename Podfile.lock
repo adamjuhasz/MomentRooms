@@ -13,10 +13,13 @@ PODS:
     - FastttCamera/Default (= 0.3.0)
   - FastttCamera/Default (0.3.0)
   - GPUImage (0.1.6)
+  - jot (0.1.3):
+    - Masonry (~> 0.6.1)
   - JVFloatLabeledTextField (1.0.4)
   - Mantle (2.0.2):
     - Mantle/extobjc (= 2.0.2)
   - Mantle/extobjc (2.0.2)
+  - Masonry (0.6.1)
   - Moment (0.1.0):
     - CocoaLumberjack
     - CocoaSecurity
@@ -47,6 +50,7 @@ PODS:
 DEPENDENCIES:
   - ColorUtils
   - FastttCamera
+  - jot (from `../jot`)
   - JVFloatLabeledTextField
   - Moment (from `../Moment`)
   - PhotoManager (from `../PhotoManager`)
@@ -59,6 +63,8 @@ DEPENDENCIES:
   - VBFPopFlatButton
 
 EXTERNAL SOURCES:
+  jot:
+    :path: ../jot
   Moment:
     :path: ../Moment
   PhotoManager:
@@ -70,8 +76,10 @@ SPEC CHECKSUMS:
   ColorUtils: f99c501f9caf5374b35480a281168565a24bdb6d
   FastttCamera: 6c406118c275030aacddaa1a1a2a5f7032dc8c51
   GPUImage: 4675ce4a5370ca92fcea8623b2a08b8f0c51b940
+  jot: 86da410a8bd544860166d5617707f3b2a8f0e4a1
   JVFloatLabeledTextField: 18b05449d479733841b2c451c87e201a45de26e2
   Mantle: 967fd31ea0220890b2e76589198996b534bb3fb1
+  Masonry: 4972309f2f134de9dd312f4dc4a21359b50e6caa
   Moment: 4b2f16f07f2c9c7bb215699c4794868001b3f7ba
   NYXImagesKit: 8163e3335a40eaa173ca5bbbf81fafb57d3947eb
   PhotoManager: 51264482e64e4249475846534aa4a070a56c73f5
@@ -84,4 +92,4 @@ SPEC CHECKSUMS:
   UIColor+ContrastingColor: 02c04a8cd29e88a5680583b0f72d7b68f8d1e1a5
   VBFPopFlatButton: 782344da63f104c279a857d806e065117a7e1196
 
-COCOAPODS: 0.37.1
+COCOAPODS: 0.37.2
